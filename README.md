@@ -8,6 +8,7 @@ Run the following commands to build/run the project:
 
 ```
 g++ main.cpp -I/opt/homebrew/include -L/opt/homebrew/lib -lGL -lglut
+
 DISPLAY=:0 ./a.out
 ```
 
