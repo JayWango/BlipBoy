@@ -1,0 +1,5 @@
+app
+*.o
+.DS_Store
+app.dSYM/
+a.out
