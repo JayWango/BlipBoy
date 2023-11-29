@@ -31,7 +31,7 @@ void Enemy::calcBounds(GLdouble l, GLdouble r, GLdouble b, GLdouble t) {
     enemyYMax = t - enemySize;
 }
 
-void Enemy::checkBounds() {
+void Enemy::move() {
     // Animation Control - compute the location for the next refresh
     enemyX += xSpeed;
     enemyY += ySpeed;

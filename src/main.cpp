@@ -4,13 +4,11 @@
 
 #include "lib/Enemy.h"
 
-GLfloat enemySize = 0.1f;      // this defines the "size" of the square  
-GLfloat enemyX = 0.0f;         // enemy's center (x, y) position
-GLfloat enemyY = 0.0f;
 GLfloat enemyXMax, enemyXMin, enemyYMax, enemyYMin; // enemy's center (x, y) bounds
-GLfloat xSpeed = 0.02f;      // enemy's speed in x and y directions
-GLfloat ySpeed = 0.007f;
 int refreshMillis = 30;      // Refresh period in milliseconds
+
+Enemy enemy1(0.1, 0, 0, 1.2, -1.2, 0.9, -0.9, 0.02, 0.007);
+Enemy enemy2(0.1, 0.5, 0.5, 0.1, -0.1, 0.1, -0.1, 0.02, 0.007);
 
 // Projection clipping area
 GLdouble clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop;
@@ -22,8 +20,6 @@ void initGL() {
 }
 
 void display() {
-    Enemy enemy1(enemySize, enemyX, enemyY, enemyXMax, enemyXMin, enemyYMax, enemyYMin, xSpeed, ySpeed);
-    Enemy enemy2(enemySize, 0.5, 0.5, enemyXMax, enemyXMin, enemyYMax, enemyYMin, xSpeed, ySpeed);
 
     // Your rendering code goes here
     glClear(GL_COLOR_BUFFER_BIT);   // Clear the color buffer with current clearing color
@@ -36,27 +32,9 @@ void display() {
     glutSwapBuffers(); // Render now
 
     // Animation Control - compute the location for the next refresh
-    enemyX += xSpeed;
-    enemyY += ySpeed;
-
-   // Check if the enemy exceeds the edges
-   if (enemyX > enemyXMax) {
-      enemyX = enemyXMax;
-      xSpeed = -xSpeed;
-   } 
-   else if (enemyX < enemyXMin) {
-      enemyX = enemyXMin;
-      xSpeed = -xSpeed;
-   }
-
-   if (enemyY > enemyYMax) {
-      enemyY = enemyYMax;
-      ySpeed = -ySpeed;
-   } 
-   else if (enemyY < enemyYMin) {
-      enemyY = enemyYMin;
-      ySpeed = -ySpeed;
-   }
+    enemy1.move();
+    //if i comment out enemy2.move(), then both enemy 1 and 2 are still somehow moving together? if i dont comment out i get weird behavior
+    enemy2.move();
 };
 
 void reshape(GLsizei width, GLsizei height) {
@@ -85,10 +63,10 @@ void reshape(GLsizei width, GLsizei height) {
    }
    glOrtho(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop, -1.0, 1.0);
    
-    enemyXMin = clipAreaXLeft + enemySize;
-    enemyXMax = clipAreaXRight - enemySize;
-    enemyYMin = clipAreaYBottom + enemySize;
-    enemyYMax = clipAreaYTop - enemySize;
+    enemyXMin = clipAreaXLeft + enemy1.enemySize;
+    enemyXMax = clipAreaXRight - enemy1.enemySize;
+    enemyYMin = clipAreaYBottom + enemy1.enemySize;
+    enemyYMax = clipAreaYTop - enemy1.enemySize;
 }
 
 /* Called back when timer expired */
