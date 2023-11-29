@@ -22,28 +22,23 @@ void initGL() {
 }
 
 void display() {
+    Enemy enemy1(enemySize, enemyX, enemyY, enemyXMax, enemyXMin, enemyYMax, enemyYMin, xSpeed, ySpeed);
+    Enemy enemy2(enemySize, 0.5, 0.5, enemyXMax, enemyXMin, enemyYMax, enemyYMin, xSpeed, ySpeed);
+
     // Your rendering code goes here
     glClear(GL_COLOR_BUFFER_BIT);   // Clear the color buffer with current clearing color
     glMatrixMode(GL_MODELVIEW);    // To operate on the model-view matrix
     glLoadIdentity();              // Reset model-view matrix
+
+    enemy1.drawEnemy();
+    enemy2.drawEnemy();
  
-    glTranslatef(enemyX, enemyY, 0.0f);  // Translate to (xPos, yPos)
+    glutSwapBuffers(); // Render now
 
+    // Animation Control - compute the location for the next refresh
+    enemyX += xSpeed;
+    enemyY += ySpeed;
 
-   // Define shapes enclosed within a pair of glBegin and glEnd
-   glBegin(GL_QUADS);              // Each set of 4 vertices form a quad
-      glColor3f(1.0f, 0.0f, 0.0f); // Red
-      glVertex2f(-enemySize, enemySize);     // Define vertices in counter-clockwise (CCW) order
-      glVertex2f(-enemySize, -enemySize);     //  so that the normal (front-face) is facing you
-      glVertex2f(enemySize, -enemySize);
-      glVertex2f(enemySize, enemySize);
-   glEnd();
- 
-   glutSwapBuffers(); // Render now
-
-      // Animation Control - compute the location for the next refresh
-   enemyX += xSpeed;
-   enemyY += ySpeed;
    // Check if the enemy exceeds the edges
    if (enemyX > enemyXMax) {
       enemyX = enemyXMax;
@@ -89,10 +84,11 @@ void reshape(GLsizei width, GLsizei height) {
       clipAreaYTop    = 1.0 / aspect;
    }
    glOrtho(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop, -1.0, 1.0);
-   enemyXMin = clipAreaXLeft + enemySize;
-   enemyXMax = clipAreaXRight - enemySize;
-   enemyYMin = clipAreaYBottom + enemySize;
-   enemyYMax = clipAreaYTop - enemySize;
+   
+    enemyXMin = clipAreaXLeft + enemySize;
+    enemyXMax = clipAreaXRight - enemySize;
+    enemyYMin = clipAreaYBottom + enemySize;
+    enemyYMax = clipAreaYTop - enemySize;
 }
 
 /* Called back when timer expired */

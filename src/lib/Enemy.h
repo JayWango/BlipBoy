@@ -18,6 +18,7 @@ class Enemy {
 
         int getHP();
         void drawEnemy();
+        void calcBounds(GLdouble l, GLdouble r, GLdouble b, GLdouble t);
         void checkBounds();
 
 

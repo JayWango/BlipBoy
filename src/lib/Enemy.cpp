@@ -13,17 +13,29 @@ Enemy::Enemy(GLfloat size, GLfloat x, GLfloat y, GLfloat xMax, GLfloat xMin, GLf
 }
 
 void Enemy::drawEnemy() {
+    glTranslatef(enemyX, enemyY, 0.0f);  // Translate to (xPos, yPos)
     // Define shapes enclosed within a pair of glBegin and glEnd
-   glBegin(GL_QUADS);              // Each set of 4 vertices form a quad
+    glBegin(GL_QUADS);              // Each set of 4 vertices form a quad
       glColor3f(1.0f, 0.0f, 0.0f); // Red
       glVertex2f(-enemySize, enemySize);     // Define vertices in counter-clockwise (CCW) order
       glVertex2f(-enemySize, -enemySize);     //  so that the normal (front-face) is facing you
       glVertex2f(enemySize, -enemySize);
       glVertex2f(enemySize, enemySize);
-   glEnd();
+    glEnd();
+}
+
+void Enemy::calcBounds(GLdouble l, GLdouble r, GLdouble b, GLdouble t) {
+    enemyXMin = l + enemySize;
+    enemyXMax = r - enemySize;
+    enemyYMin = b + enemySize;
+    enemyYMax = t - enemySize;
 }
 
 void Enemy::checkBounds() {
+    // Animation Control - compute the location for the next refresh
+    enemyX += xSpeed;
+    enemyY += ySpeed;
+
    // Check if the enemy exceeds the edges
    if (enemyX > enemyXMax) {
       enemyX = enemyXMax;
