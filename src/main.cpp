@@ -2,6 +2,9 @@
 
 void display() {
     // Your rendering code goes here
+    glClear(GL_COLOR_BUFFER_BIT);
+    glLoadIdentity();
+    glFlush();
 }
 
 int main(int argc, char** argv) {
