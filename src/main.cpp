@@ -63,10 +63,15 @@ void reshape(GLsizei width, GLsizei height) {
    }
    glOrtho(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop, -1.0, 1.0);
    
-    enemyXMin = clipAreaXLeft + enemy1.enemySize;
-    enemyXMax = clipAreaXRight - enemy1.enemySize;
-    enemyYMin = clipAreaYBottom + enemy1.enemySize;
-    enemyYMax = clipAreaYTop - enemy1.enemySize;
+   enemy1.enemyXMin = clipAreaXLeft + enemy1.enemySize;
+   enemy1.enemyXMax = clipAreaXRight - enemy1.enemySize;
+   enemy1.enemyYMin = clipAreaYBottom + enemy1.enemySize;
+   enemy1.enemyYMax = clipAreaYTop - enemy1.enemySize;
+
+   enemy2.enemyXMin = clipAreaXLeft + enemy2.enemySize;
+   enemy2.enemyXMax = clipAreaXRight - enemy2.enemySize;
+   enemy2.enemyYMin = clipAreaYBottom + enemy2.enemySize;
+   enemy2.enemyYMax = clipAreaYTop - enemy2.enemySize;
 }
 
 /* Called back when timer expired */
