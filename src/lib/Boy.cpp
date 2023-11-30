@@ -1,13 +1,10 @@
 #include "Boy.h"
-#include <GLUT/glut.h>
-#include <OpenGL/glu.h>
-#include <OpenGL/gl.h>
 
 #include <cmath>
 
 
-Boy::Boy(float startX, float startY, float startSize)
-    : x(startX), y(startY), size(startSize) {}
+Boy::Boy(float startX, float startY)
+    : x(startX), y(startY) {}
 
 void Boy::draw() const {
     const int numSegments = 100; 
@@ -16,22 +13,19 @@ void Boy::draw() const {
 
     glBegin(GL_TRIANGLE_FAN); 
     glVertex2f(x, y);
-
     for (int i = 0; i <= numSegments; ++i) {
         float theta = 2.0f * 3.1415926f * float(i) / float(numSegments);
         float vertexX = x + radius * cosf(theta);
         float vertexY = y + radius * sinf(theta);
         glVertex2f(vertexX, vertexY);
     }
-
     glEnd();
     
-    // Draw active Bullets
-    // glBegin(GL_POINTS);
-    // for (const auto& bullet : bullets) {
-    //     bullet.draw();
-    // }
-    // glEnd();
+    glBegin(GL_POINTS);
+    for (auto& bullet : bullets) {
+        bullet.draw();
+    }
+    glEnd();
 }
 
 void Boy::move(float dx, float dy) {
@@ -39,19 +33,18 @@ void Boy::move(float dx, float dy) {
     float newX = x + dx;
     float newY = y + dy;
 
-    float minX = -10.0f; 
-    float maxX = 10.0f;  
-    float minY = -10.0f; 
-    float maxY = 10.0f;  
-
-    // boundaries check
-    if (newX - size / 2 > minX && newX + size / 2 < maxX) {
+    if (newX >= minX && newX <= maxX && newY >= minY && newY <= maxY) {
         x = newX;
-    }
-    if (newY - size / 2 > minY && newY + size / 2 < maxY) {
         y = newY;
     }
 
+}
+
+void Boy::calcBounds(GLdouble l, GLdouble r, GLdouble b, GLdouble t) {
+    minX = l + (size / 2);
+    maxX = r - (size / 2);
+    minY = b + (size / 2);
+    maxY = t - (size / 2);
 }
 
 
@@ -72,8 +65,6 @@ void Boy::addBullet(float mouseX, float mouseY) {
     if (bullets.size() < maxBullets) {
         float bulletSpeed = 0.5f;
         bullets.push_back(Bullet(x, y, mouseX, mouseY, bulletSpeed));
-        bullets.back().draw();
         bullets.back().update();
     }
-
 }

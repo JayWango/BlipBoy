@@ -1,19 +1,23 @@
 #ifndef BOY_H 
 #define BOY_H
 
+#include <vector>
+#include <GLUT/glut.h>
+
 #include "Bullet.h"
 
-#include <vector>
 
 class Boy {
 public:
     float x, y;
-    float size;
-    std::vector<Bullet> bullets; // Bullets associated with the boy
+    const float size = 0.2f;
     const int maxBullets = 5; // Maximum number of bullets
+    GLdouble minX, maxX, minY, maxY;
+    std::vector<Bullet> bullets; // Bullets associated with the boy
 
-    Boy(float startX, float startY, float startSize);
+    Boy(float startX, float startY);
     void draw() const;
+    void calcBounds(GLdouble l, GLdouble r, GLdouble b, GLdouble t);
     void move(float dx, float dy);
 
     void addBullet(float x, float y);

@@ -14,8 +14,8 @@
 
 int refreshMillis = 30;      // Refresh period in milliseconds
 
-// instantiate a blipboy with (x, y, size)
-Boy BlipBoy(0.0f, 0.0f, 0.15f);
+// instantiate a blipboy with (x, y)
+Boy BlipBoy(0.0f, 0.0f);
 std::unordered_set<char> pressedKeys;
 
 // instatiate enemy (size, x, y, xMax, xMin, yMax, yMin, speedX, speedY)
@@ -45,9 +45,6 @@ void display() {
    glLoadIdentity();              // Reset model-view matrix
 
    BlipBoy.draw();
-   for (auto bullet : BlipBoy.bullets) {
-      bullet.draw();
-   }
    BlipBoy.updateBullets();
 
    enemy1.drawEnemy(1.0f, 1.0f, 0.0f);
@@ -85,8 +82,10 @@ void reshape(GLsizei width, GLsizei height) {
       clipAreaYBottom = -1.0 / aspect;
       clipAreaYTop    = 1.0 / aspect;
    }
+
    glOrtho(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop, -1.0, 1.0);
-   
+
+   BlipBoy.calcBounds(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop);
    enemy1.calcBounds(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop);
    enemy2.calcBounds(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop);
    enemy3.calcBounds(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop);
@@ -128,7 +127,6 @@ int main(int argc, char** argv) {
 
    glutInitWindowPosition(200, 100);
    glutInitWindowSize(800, 600);
-
    glutCreateWindow("BlipBoy");
 
    glutDisplayFunc(display); // Set the display callback function
