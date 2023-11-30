@@ -14,7 +14,8 @@ Boy BlipBoy(0.0f, 0.0f, 0.15f, 0.02f);
 std::unordered_set<char> pressedKeys;
 
 // instatiate enemy (size, x, y, xMax, xMin, yMax, yMin, speedX, speedY)
-Enemy enemy1(0.1, 0, 0, 0.02, 0.007);
+// maximum X-value is 1.33, max Y-value is 1 (1.33 = (4/3) = (800/600)
+Enemy enemy1(0.1, 1.33, -1, 0.01, 0.007);
 Enemy enemy2(0.1, 0, 0, 0.04, 0.01);
 Enemy enemy3(0.1, 0, 0, 0.03, -0.007);
 
@@ -111,7 +112,7 @@ int main(int argc, char** argv) {
    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE); // Use GLUT_DOUBLE for double buffering
 
    glutInitWindowPosition(200, 100);
-   glutInitWindowSize(800, 600);
+   glutInitWindowSize(1920, 1080);
 
    glutCreateWindow("BlipBoy");
 
