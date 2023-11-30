@@ -15,11 +15,11 @@ class Enemy {
         GLfloat xSpeed;      // enemy's speed in x and y directions
         GLfloat ySpeed;
 
-        Enemy(GLfloat size, GLfloat x, GLfloat y, GLfloat xMax, GLfloat xMin, GLfloat yMax, GLfloat yMin, GLfloat speedX, GLfloat speedY);
+        Enemy(GLfloat size, GLfloat x, GLfloat y, GLfloat speedX, GLfloat speedY);
 
         int getHP();
-        void drawEnemy();
-        void calcBounds(GLdouble l, GLdouble r, GLdouble b, GLdouble t);
+        void drawEnemy(GLfloat r, GLfloat g, GLfloat b);
+        void calcBounds(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top);
         void move();
 
 

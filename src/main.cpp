@@ -4,11 +4,12 @@
 
 #include "lib/Enemy.h"
 
-GLfloat enemyXMax, enemyXMin, enemyYMax, enemyYMin; // enemy's center (x, y) bounds
 int refreshMillis = 30;      // Refresh period in milliseconds
 
-Enemy enemy1(0.1, 0, 0, 1.2, -1.2, 0.9, -0.9, 0.02, 0.007);
-Enemy enemy2(0.1, 0.5, 0.5, 0.1, -0.1, 0.1, -0.1, 0.02, 0.007);
+// instatiate enemy (size, x, y, xMax, xMin, yMax, yMin, speedX, speedY)
+Enemy enemy1(0.1, 0, 0, 0.02, 0.007);
+Enemy enemy2(0.1, 0, 0, 0.04, 0.01);
+Enemy enemy3(0.1, 0, 0, 0.03, -0.007);
 
 // Projection clipping area
 GLdouble clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop;
@@ -20,21 +21,21 @@ void initGL() {
 }
 
 void display() {
-
     // Your rendering code goes here
     glClear(GL_COLOR_BUFFER_BIT);   // Clear the color buffer with current clearing color
     glMatrixMode(GL_MODELVIEW);    // To operate on the model-view matrix
     glLoadIdentity();              // Reset model-view matrix
 
-    enemy1.drawEnemy();
-    enemy2.drawEnemy();
+    enemy1.drawEnemy(1.0f, 1.0f, 0.0f);
+    enemy2.drawEnemy(1.0f, 0.0f, 0.0f);
+    enemy3.drawEnemy(0.0f, 1.0f, 0.0f);
  
     glutSwapBuffers(); // Render now
 
     // Animation Control - compute the location for the next refresh
     enemy1.move();
-    //if i comment out enemy2.move(), then both enemy 1 and 2 are still somehow moving together? if i dont comment out i get weird behavior
     enemy2.move();
+    enemy3.move();
 };
 
 void reshape(GLsizei width, GLsizei height) {
@@ -63,15 +64,9 @@ void reshape(GLsizei width, GLsizei height) {
    }
    glOrtho(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop, -1.0, 1.0);
    
-   enemy1.enemyXMin = clipAreaXLeft + enemy1.enemySize;
-   enemy1.enemyXMax = clipAreaXRight - enemy1.enemySize;
-   enemy1.enemyYMin = clipAreaYBottom + enemy1.enemySize;
-   enemy1.enemyYMax = clipAreaYTop - enemy1.enemySize;
-
-   enemy2.enemyXMin = clipAreaXLeft + enemy2.enemySize;
-   enemy2.enemyXMax = clipAreaXRight - enemy2.enemySize;
-   enemy2.enemyYMin = clipAreaYBottom + enemy2.enemySize;
-   enemy2.enemyYMax = clipAreaYTop - enemy2.enemySize;
+   enemy1.calcBounds(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop);
+   enemy2.calcBounds(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop);
+   enemy3.calcBounds(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop);
 }
 
 /* Called back when timer expired */
