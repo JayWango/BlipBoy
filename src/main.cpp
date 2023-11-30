@@ -3,15 +3,15 @@
 #include <OpenGL/gl.h>
 #include <chrono>
 #include <unordered_set>
+#include <iostream>
 
 #include "lib/Boy.h"
 #include "lib/Bullet.h"
 #include "lib/Enemy.h"
 
 
-#define SCREEN_WIDTH = 800;
-#define SCREEN_HEIGHT = 600;
-
+int screenWidth;
+int screenHeight;
 int refreshMillis = 30;      // Refresh period in milliseconds
 
 // instantiate a blipboy with (x, y)
@@ -33,8 +33,14 @@ void initGL() {
 }
 
 void mouse(int button, int state, int x, int y) {
+   float aspect = static_cast<float>(screenWidth) / static_cast<float>(screenHeight);
+   float newX;
+   float newY;
+
    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
-      BlipBoy.addBullet(x, y);
+      newX = (static_cast<float>(x) - (screenWidth / 2)) / (screenWidth / 2) * aspect - BlipBoy.x;
+      newY = -((static_cast<float>(y) - (screenHeight / 2)) / (screenHeight / 2)) - BlipBoy.y;
+      BlipBoy.addBullet(newX, newY);
    }
 }
 
@@ -64,6 +70,8 @@ void display() {
 };
 
 void reshape(GLsizei width, GLsizei height) {
+   screenWidth = width;
+   screenHeight = height;
    // Compute aspect ratio of the new window
    if (height == 0) height = 1; // To prevent divide by 0
    GLfloat aspect = (GLfloat)width / (GLfloat)height;

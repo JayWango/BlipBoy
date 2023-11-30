@@ -55,11 +55,8 @@ void Boy::updateBullets() {
     }
 }
 
-void Boy::addBullet(float mouseX, float mouseY) {
+void Boy::addBullet(float dirX, float dirY) {
     if (bullets.size() < maxBullets) {
-        float dirX = mouseX - x;
-        float dirY = 800 - mouseY - y; // Flip the y-coordinate due to screen orientation
-
         // Normalize the direction vector
         float length = sqrt(dirX * dirX + dirY * dirY);
         if (length != 0) {
