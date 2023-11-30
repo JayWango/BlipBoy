@@ -23,10 +23,10 @@ void Enemy::drawEnemy(GLfloat r, GLfloat g, GLfloat b) {
 }
 
 void Enemy::calcBounds(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top) {
-    enemyXMin = left + enemySize;
-    enemyXMax = right - enemySize;
-    enemyYMin = bottom + enemySize;
-    enemyYMax = top - enemySize;
+   enemyXMin = left + enemySize;
+   enemyXMax = right - enemySize;
+   enemyYMin = bottom + enemySize;
+   enemyYMax = top - enemySize;
 }
 
 void Enemy::move() {
