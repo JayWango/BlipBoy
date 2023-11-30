@@ -10,7 +10,7 @@ CXX      = g++
 #  $+ is a list of all the dependencies
 #  $< is the first dependency
 
-blipboy: main.o Boy.o
+blipboy: main.o Boy.o Enemy.o
 	${CXX} $(CXXFLAGS) -o $@ $+ -L/opt/homebrew/lib -lGL -lglut
 
 
