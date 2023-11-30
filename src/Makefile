@@ -2,7 +2,7 @@ CXXFLAGS = -g -std=c++17 -Wall -Wextra -Werror -Wno-unused-parameter
 CXX      = g++
 
 # These targets don't create any files:
-.PHONY: scrypt clean
+.PHONY: blipboy clean
 
 # Magic Variables!
 # https://www.gnu.org/software/make/manual/html_node/Automatic-Variables.html
@@ -25,7 +25,6 @@ Enemy.o: lib/Enemy.cpp
 
 Bullet.o: lib/Bullet.cpp
 	${CXX} -c -o $@ $< -I/opt/homebrew/include 
-
 
 clean:
 	rm *.o blipboy
