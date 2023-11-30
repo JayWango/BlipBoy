@@ -11,9 +11,9 @@ class Boy {
 public:
     float x, y;
     const float size = 0.2f;
-    const int maxBullets = 5; // Maximum number of bullets
+    const int maxBullets = 5; 
     GLdouble minX, maxX, minY, maxY;
-    std::vector<Bullet> bullets; // Bullets associated with the boy
+    std::vector<Bullet> bullets; 
 
     Boy(float startX, float startY);
     void draw() const;

@@ -17,10 +17,10 @@ blipboy: main.o Boy.o Bullet.o Enemy.o
 main.o: main.cpp
 	${CXX} -c -o $@ $< -I/opt/homebrew/include   
 
-Enemy.o: lib/Enemy.cpp
+Boy.o: lib/Boy.cpp 
 	${CXX} -c -o $@ $< -I/opt/homebrew/include 
 
-Boy.o: lib/Boy.cpp 
+Enemy.o: lib/Enemy.cpp
 	${CXX} -c -o $@ $< -I/opt/homebrew/include 
 
 Bullet.o: lib/Bullet.cpp

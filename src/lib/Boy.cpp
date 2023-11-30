@@ -20,12 +20,6 @@ void Boy::draw() const {
         glVertex2f(vertexX, vertexY);
     }
     glEnd();
-    
-    glBegin(GL_POINTS);
-    for (auto& bullet : bullets) {
-        bullet.draw();
-    }
-    glEnd();
 }
 
 void Boy::move(float dx, float dy) {
@@ -52,7 +46,7 @@ void Boy::updateBullets() {
     std::vector<Bullet>::iterator it = bullets.begin();
     while (it != bullets.end()) {
         const Bullet& b = *it;
-        if (b.x < 0 || b.y < 0 || b.x > 800 || b.y > 600) {
+        if (b.x <= minX -0.1f || b.y <= minY -0.1f || b.x >= maxX + 0.1f  || b.y >= maxY + 0.1f ) {
             it = bullets.erase(it); // Remove the bullet outside the screen
         } 
         else {
@@ -63,8 +57,17 @@ void Boy::updateBullets() {
 
 void Boy::addBullet(float mouseX, float mouseY) {
     if (bullets.size() < maxBullets) {
-        float bulletSpeed = 0.5f;
-        bullets.push_back(Bullet(x, y, mouseX, mouseY, bulletSpeed));
+        float dirX = mouseX - x;
+        float dirY = 800 - mouseY - y; // Flip the y-coordinate due to screen orientation
+
+        // Normalize the direction vector
+        float length = sqrt(dirX * dirX + dirY * dirY);
+        if (length != 0) {
+            dirX /= length;
+            dirY /= length;
+        }
+
+        bullets.push_back(Bullet(x, y, dirX, dirY, 0.03f));
         bullets.back().update();
     }
 }

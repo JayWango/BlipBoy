@@ -27,15 +27,15 @@ Enemy enemy3(0.1, 0, 10, 0.03, -0.007);
 GLdouble clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop;
 
 
+void initGL() {
+   // Set "clearing" or background color
+   glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Black and opaque
+}
+
 void mouse(int button, int state, int x, int y) {
    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
       BlipBoy.addBullet(x, y);
    }
-}
-
-void initGL() {
-   // Set "clearing" or background color
-   glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Black and opaque
 }
 
 void display() {
@@ -45,6 +45,10 @@ void display() {
    glLoadIdentity();              // Reset model-view matrix
 
    BlipBoy.draw();
+   for (auto& bullet : BlipBoy.bullets) {
+      bullet.update(); // Update bullet positions
+      bullet.draw();   // Draw updated bullets
+   }
    BlipBoy.updateBullets();
 
    enemy1.drawEnemy(1.0f, 1.0f, 0.0f);
