@@ -4,6 +4,7 @@
 #include <chrono>
 #include <unordered_set>
 #include <iostream>
+#include <sstream>
 
 #include "lib/Boy.h"
 #include "lib/Bullet.h"
@@ -13,6 +14,7 @@
 int screenWidth;
 int screenHeight;
 int refreshMillis = 30;      // Refresh period in milliseconds
+std::chrono::time_point<std::chrono::steady_clock> startTime;
 
 // instantiate a blipboy with (x, y)
 Boy BlipBoy(0.0f, 0.0f);
@@ -49,6 +51,21 @@ void display() {
    glClear(GL_COLOR_BUFFER_BIT);   // Clear the color buffer with current clearing color
    glMatrixMode(GL_MODELVIEW);    // To operate on the model-view matrix
    glLoadIdentity();              // Reset model-view matrix
+
+   // Calculate elapsed time
+   auto currentTime = std::chrono::steady_clock::now();
+   std::chrono::duration<double> elapsedSeconds = currentTime - startTime;
+   int remainingSeconds = 60 - static_cast<int>(elapsedSeconds.count());
+
+   // Render countdown timer
+   glColor3f(1.0f, 1.0f, 1.0f); // Set color to white
+   glRasterPos2f(clipAreaXLeft + 0.1, clipAreaYTop - 0.1); // Position of the timer
+
+   std::string timerText = "Time: " + std::to_string(remainingSeconds) + "s";
+
+   for (char character : timerText) {
+      glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, character);
+   }
 
    BlipBoy.draw();
    for (auto& bullet : BlipBoy.bullets) {
@@ -139,6 +156,7 @@ int main(int argc, char** argv) {
 
    glutInitWindowPosition(200, 100);
    glutInitWindowSize(800, 600);
+   startTime = std::chrono::steady_clock::now(); // Set the start time for the countdown
    glutCreateWindow("BlipBoy");
 
    glutDisplayFunc(display); // Set the display callback function
@@ -146,6 +164,7 @@ int main(int argc, char** argv) {
    glutKeyboardFunc(handleKeyPress);
    glutKeyboardUpFunc(handleKeyRelease);
    glutMouseFunc(mouse);
+
 
    glutTimerFunc(0, Timer, 0);     // First timer call immediately
 
