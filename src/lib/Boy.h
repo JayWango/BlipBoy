@@ -3,19 +3,21 @@
 
 #include "Bullet.h"
 
+#include <vector>
+
 class Boy {
 public:
     float x, y;
     float size;
-    static const int maxBullets = 5;
-    Bullet bullets[maxBullets];
-    int mouseX, mouseY;
+    std::vector<Bullet> bullets; // Bullets associated with the boy
+    const int maxBullets = 5; // Maximum number of bullets
 
     Boy(float startX, float startY, float startSize);
     void draw() const;
     void move(float dx, float dy);
-    void shoot();
-    void setMousePosition(int x, int y);
+
+    void addBullet(float x, float y);
+    void updateBullets();
 };
 
 

@@ -7,11 +7,7 @@
 
 
 Boy::Boy(float startX, float startY, float startSize)
-    : x(startX), y(startY), size(startSize) {
-    for (int i = 0; i < maxBullets; ++i) {
-        bullets[i] = Bullet(); // Initialize bullets array
-    }
-}
+    : x(startX), y(startY), size(startSize) {}
 
 void Boy::draw() const {
     const int numSegments = 100; 
@@ -31,14 +27,11 @@ void Boy::draw() const {
     glEnd();
     
     // Draw active Bullets
-    glPointSize(7.0);
-    glBegin(GL_POINTS);
-    for (int i = 0; i < maxBullets; ++i) {
-        if (bullets[i].active) {
-            bullets[i].draw();
-        }
-    }
-    glEnd();
+    // glBegin(GL_POINTS);
+    // for (const auto& bullet : bullets) {
+    //     bullet.draw();
+    // }
+    // glEnd();
 }
 
 void Boy::move(float dx, float dy) {
@@ -46,43 +39,41 @@ void Boy::move(float dx, float dy) {
     float newX = x + dx;
     float newY = y + dy;
 
-    // Define screen boundaries
     float minX = -10.0f; 
     float maxX = 10.0f;  
     float minY = -10.0f; 
     float maxY = 10.0f;  
 
-    // Clamp the new position within the screen boundaries
+    // boundaries check
     if (newX - size / 2 > minX && newX + size / 2 < maxX) {
         x = newX;
     }
     if (newY - size / 2 > minY && newY + size / 2 < maxY) {
         y = newY;
     }
+
 }
 
-void Boy::setMousePosition(int x, int y) {
-    mouseX = x;
-    mouseY = y;
-}
 
-void Boy::shoot() {
-    // Find an inactive bullet and activate it
-    for (int i = 0; i < maxBullets; ++i) {
-        if (!bullets[i].active) {
-            // Assuming mouse position is captured elsewhere and stored in mouseX, mouseY
-            float dirX = mouseX - x; // Calculate direction towards mouse position
-            float dirY = mouseY - y;
-
-            float magnitude = sqrt((dirX * dirX) + (dirY * dirY)); // Calculate magnitude
-            dirX /= magnitude; // Normalize direction vector
-            dirY /= magnitude;
-
-            bullets[i].activate(x, y);
-            bullets[i].speed = 5.0f;
-            bullets[i].move(dirX, dirY);
-
-            break; // Activate only one bullet per shoot() call
+void Boy::updateBullets() {
+    std::vector<Bullet>::iterator it = bullets.begin();
+    while (it != bullets.end()) {
+        const Bullet& b = *it;
+        if (b.x < 0 || b.y < 0 || b.x > 800 || b.y > 600) {
+            it = bullets.erase(it); // Remove the bullet outside the screen
+        } 
+        else {
+            ++it;
         }
     }
+}
+
+void Boy::addBullet(float mouseX, float mouseY) {
+    if (bullets.size() < maxBullets) {
+        float bulletSpeed = 0.5f;
+        bullets.push_back(Bullet(x, y, mouseX, mouseY, bulletSpeed));
+        bullets.back().draw();
+        bullets.back().update();
+    }
+
 }

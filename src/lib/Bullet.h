@@ -4,14 +4,13 @@
 class Bullet {
 public:
     float x, y;
+    float mouseX, mouseY;
     float speed;
-    bool active;
 
-    Bullet();
-    Bullet(float startX, float startY, float startSpeed);
+    Bullet(float startX, float startY, float mouseX, float mouseY,  float bulletSpeed);
+
     void draw() const;
-    void move(float dirX, float dirY);
-    void activate(float startX, float startY);
+    void update();
 };
 
 #endif
