@@ -6,15 +6,10 @@
 ## How to build the project:
 Run the following commands to build/run the project:
 
-```
-g++ -c main.cpp -o main.o -I/opt/homebrew/include   
+In order to build the project, run `make` in the terminal. The Makefile will compile all the necessary `*.cpp` files into object files and link those object files together. 
 
-g++ -c lib/Enemy.cpp -o Enemy.o -I/opt/homebrew/include  
-
-g++ main.o Enemy.o -o my_program -L/opt/homebrew/lib -lGL -lglut
-
-DISPLAY=:0 ./my_program    
-```
+Then, in order to open the GLUT window, run the following command to play the game: 
+`DISPLAY=:0 ./blipboy`
 
 ## How to use the executables once they're built:
 
