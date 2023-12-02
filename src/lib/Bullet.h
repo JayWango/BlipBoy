@@ -1,6 +1,8 @@
 #ifndef BULLET_H 
 #define BULLET_H
 
+#include <GL/glut.h>
+
 class Bullet {
 public:
     float x, y, dirX, dirY;

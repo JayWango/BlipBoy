@@ -1,4 +1,4 @@
-#include <GLUT/glut.h>
+#include <GL/glut.h>
 #include <OpenGL/glu.h>
 #include <OpenGL/gl.h>
 #include <chrono>
