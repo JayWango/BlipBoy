@@ -5,7 +5,7 @@
 
 class Enemy {
     private:
-        int HP;
+        int HP;                 // yellow enemies = 1 HP, green = 2 HP, blue = 3 HP
     
     public:
         GLfloat enemySize;      // this defines the "size" of the square  

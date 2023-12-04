@@ -5,6 +5,8 @@
 #include <unordered_set>
 #include <iostream>
 #include <sstream>
+#include <cstdlib>
+#include <random>
 
 #include "lib/Boy.h"
 #include "lib/Bullet.h"
@@ -16,14 +18,25 @@ int screenHeight;
 int refreshMillis = 30;      // Refresh period in milliseconds
 std::chrono::time_point<std::chrono::steady_clock> startTime;
 
+GLfloat generateRandomPos() {
+    // Use the current time as a seed for the random number generator
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::default_random_engine generator(seed);
+    // Create a uniform distribution for floating-point numbers between -1 and 1
+    std::uniform_real_distribution<double> distribution(-1.0, 1.0);
+    // Generate a random number
+    GLfloat randomValue = distribution(generator);
+    return randomValue + 0.3;
+}
+
 // instantiate a blipboy with (x, y)
 Boy BlipBoy(0.0f, 0.0f);
 std::unordered_set<char> pressedKeys;
 
 // instatiate enemy (size, x, y, xMax, xMin, yMax, yMin, speedX, speedY)
-Enemy enemy1(0.1, 10, 0, 0.02, 0.007);
-Enemy enemy2(0.1, -10, 0, 0.04, 0.01);
-Enemy enemy3(0.1, 0, 10, 0.03, -0.007);
+Enemy enemy1(0.1, generateRandomPos(), generateRandomPos(), 0.02, 0.007);
+Enemy enemy2(0.1,  generateRandomPos(), generateRandomPos(), 0.04, 0.01);
+Enemy enemy3(0.1, generateRandomPos(), generateRandomPos(), 0.03, -0.007);
 
 // Projection clipping area
 GLdouble clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop;
