@@ -1,11 +1,27 @@
 #include "Enemy.h"
 
-Enemy::Enemy(GLfloat size, GLfloat x, GLfloat y,  GLfloat speedX, GLfloat speedY) {
-        enemySize = size;  
-        enemyX = x;      
-        enemyY = y;
+Enemy::Enemy(GLfloat size, GLfloat xMax, GLfloat xMin, GLfloat yMax, GLfloat yMin, GLfloat speedX, GLfloat speedY) {
+        enemySize = size; 
+        generateRandomPos(xMax, xMin, yMax, yMin);
         xSpeed = speedX;      
         ySpeed = speedY; 
+}
+
+void Enemy::generateRandomPos(GLfloat xMax, GLfloat xMin, GLfloat yMax, GLfloat yMin) {
+    // Use the current time as a seed for the random number generator
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::default_random_engine generator(seed);
+
+    // Create a uniform distribution for coordinates
+    std::uniform_real_distribution<double> xDistribution(xMin, xMax);
+    std::uniform_real_distribution<double> yDistribution(yMin, yMax);
+
+    // Generate random coordinates until a non-zero coordinate pair is obtained
+    do {
+        enemyX = xDistribution(generator);
+        enemyY = yDistribution(generator);
+    } 
+    while (enemyX < enemySize + 0.1 && enemyY < enemySize + 0.1);
 }
 
 void Enemy::drawEnemy(GLfloat r, GLfloat g, GLfloat b) {

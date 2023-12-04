@@ -2,6 +2,8 @@
 #define ENEMY_H
 
 #include <GLUT/glut.h>
+#include <chrono>
+#include <random>
 
 class Enemy {
     private:
@@ -15,12 +17,13 @@ class Enemy {
         GLfloat xSpeed;      // enemy's speed in x and y directions
         GLfloat ySpeed;
 
-        Enemy(GLfloat size, GLfloat x, GLfloat y, GLfloat speedX, GLfloat speedY);
+        Enemy(GLfloat size, GLfloat enemyXMax, GLfloat enemyXMin, GLfloat enemyYMax, GLfloat enemyYMin, GLfloat speedX, GLfloat speedY);
 
         int getHP();
         void drawEnemy(GLfloat r, GLfloat g, GLfloat b);
         void calcBounds(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top);
         void move();
+        void generateRandomPos(GLfloat xMax, GLfloat xMin, GLfloat yMax, GLfloat yMin);
 
 
 };
