@@ -8,7 +8,8 @@
 class Enemy {
     private:
         int HP;                 // yellow enemies = 1 HP, green = 2 HP, blue = 3 HP
-    
+       
+
     public:
         GLfloat enemySize;      // this defines the "size" of the square  
         GLfloat enemyX;         // enemy's center (x, y) position
@@ -18,13 +19,15 @@ class Enemy {
         GLfloat ySpeed;
 
         Enemy(GLfloat size, GLfloat enemyXMax, GLfloat enemyXMin, GLfloat enemyYMax, GLfloat enemyYMin, GLfloat speedX, GLfloat speedY);
-
+        bool isActive;
+        Enemy() : isActive(true){}
+        void deactivate() { isActive = false; }
+        void activate() { isActive = true; }
         int getHP();
         void drawEnemy(GLfloat r, GLfloat g, GLfloat b);
         void calcBounds(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top);
         void move();
         void generateRandomPos(GLfloat xMax, GLfloat xMin, GLfloat yMax, GLfloat yMin);
-
 
 };
 

@@ -13,6 +13,8 @@
 #include "lib/Enemy.h"
 
 
+bool isGameOver = false;
+
 int screenWidth;
 int screenHeight;
 int refreshMillis = 30;      // Refresh period in milliseconds
@@ -48,6 +50,35 @@ void mouse(int button, int state, int x, int y) {
    }
 }
 
+//restart game function
+void restartGame() {
+   isGameOver = false;
+   BlipBoy.maxhealth = 100; // Reset the player's health
+   BlipBoy.x = 0.0f; // Reset the player's position
+   BlipBoy.y = 0.0f;
+   BlipBoy.bullets.clear();
+   // Reactivate and reset enemies
+   enemy1.generateRandomPos(enemy1.enemyXMax, enemy1.enemyXMin, enemy1.enemyYMax, enemy1.enemyYMin);
+   enemy1.activate();
+   enemy2.generateRandomPos(enemy1.enemyXMax, enemy1.enemyXMin, enemy1.enemyYMax, enemy1.enemyYMin);
+   enemy2.activate();
+   enemy3.generateRandomPos(enemy1.enemyXMax, enemy1.enemyXMin, enemy1.enemyYMax, enemy1.enemyYMin);
+   enemy3.activate();
+
+   startTime = std::chrono::steady_clock::now();
+   // isOnCooldown = false;
+   // lastHitTime = std::chrono::steady_clock::now();
+}
+
+bool checkBoyEnemyCollision(const Boy& boy, const Enemy& enemy) {
+   // if (isOnCooldown) {
+   //    return false;
+   // }
+
+   float boySizeHalf = boy.size / 2.0f;
+   return (boy.x - boySizeHalf < enemy.enemyX + enemy.enemySize && boy.x + boySizeHalf > enemy.enemyX - enemy.enemySize && boy.y - boySizeHalf < enemy.enemyY + enemy.enemySize && boy.y + boySizeHalf > enemy.enemyY - enemy.enemySize);
+}
+
 void display() {
    // Your rendering code goes here
    glClear(GL_COLOR_BUFFER_BIT);   // Clear the color buffer with current clearing color
@@ -76,9 +107,36 @@ void display() {
    }
    BlipBoy.updateBullets();
 
+   if(enemy1.isActive && checkBoyEnemyCollision(BlipBoy, enemy1)){
+      BlipBoy.maxhealth -= 50.0;
+      enemy1.deactivate();
+   }
+   if(enemy2.isActive && checkBoyEnemyCollision(BlipBoy, enemy2)){
+      BlipBoy.maxhealth -= 50.0;
+      enemy2.deactivate();
+   }
+   if(enemy3.isActive && checkBoyEnemyCollision(BlipBoy, enemy3)){
+      BlipBoy.maxhealth -= 50.0;
+      enemy3.deactivate();
+   }
+   BlipBoy.drawHealthBar(BlipBoy.x - 0.1, BlipBoy.y + 0.2, BlipBoy.maxhealth / 100);
    enemy1.drawEnemy(1.0f, 1.0f, 0.0f);
    enemy2.drawEnemy(1.0f, 0.0f, 0.0f);
    enemy3.drawEnemy(0.0f, 1.0f, 0.0f);
+
+   //Game over logic
+   if (BlipBoy.maxhealth <= 0 && !isGameOver) {
+      isGameOver = true;
+      BlipBoy.maxhealth = 0; // Ensure health doesn't go below zero
+   }
+   if (isGameOver) {
+      glColor3f(1.0f, 0.0f, 0.0f); // Red color for game over text
+      const char* gameOverText = "Game Over!\nPress 'R' to restart";
+      glRasterPos2f(-0.25f, 0.0f); // Centered position for game over text
+      for (const char* c = gameOverText; *c != '\0'; c++) {
+         glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
+      }
+   }
  
    glutSwapBuffers(); // Render now
 
@@ -147,6 +205,11 @@ void Timer(int value) {
 
 void handleKeyPress(unsigned char key, int x, int y) {
    pressedKeys.insert(key);
+   if (key == 'r' || key == 'R') {
+      if(isGameOver){
+         restartGame();
+      }
+   }
 }
 void handleKeyRelease(unsigned char key, int x, int y) {
    pressedKeys.erase(key);

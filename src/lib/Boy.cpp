@@ -64,7 +64,33 @@ void Boy::addBullet(float dirX, float dirY) {
             dirY /= length;
         }
 
-        bullets.push_back(Bullet(x, y, dirX, dirY, 0.03f));
+        bullets.push_back(Bullet(x, y, dirX, dirY, 0.06f));
         bullets.back().update();
     }
+}
+
+
+void Boy::drawHealthBar(float x, float y, float healthPercent) {
+    // Set color for the background of the health bar (grey)
+    glColor3f(0.5, 0.5, 0.5);
+    glBegin(GL_QUADS);
+    glVertex2f(x, y);
+    glVertex2f(x + 0.1, y);
+    glVertex2f(x + 0.1, y - 0.025);
+    glVertex2f(x, y - 0.025);
+    glEnd();
+
+    // Set color for the actual health (green for full health, red for low)
+    glColor3f(1.0 - healthPercent, healthPercent, 0.0);
+    float width = 0.2 * healthPercent;
+    glBegin(GL_QUADS);
+    glVertex2f(x, y);
+    glVertex2f(x + width, y);
+    glVertex2f(x + width, y - 0.025);
+    glVertex2f(x, y - 0.025);
+    glEnd();
+}
+
+void Boy::decreaseHealth(float amount) {
+    maxhealth = std::max(0.0f, maxhealth - amount);
 }

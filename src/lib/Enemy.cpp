@@ -1,6 +1,6 @@
 #include "Enemy.h"
 
-Enemy::Enemy(GLfloat size, GLfloat xMax, GLfloat xMin, GLfloat yMax, GLfloat yMin, GLfloat speedX, GLfloat speedY) {
+Enemy::Enemy(GLfloat size, GLfloat xMax, GLfloat xMin, GLfloat yMax, GLfloat yMin, GLfloat speedX, GLfloat speedY): enemySize(size), isActive(true) {
         enemySize = size; 
         generateRandomPos(xMax, xMin, yMax, yMin);
         xSpeed = speedX;      
@@ -25,6 +25,7 @@ void Enemy::generateRandomPos(GLfloat xMax, GLfloat xMin, GLfloat yMax, GLfloat 
 }
 
 void Enemy::drawEnemy(GLfloat r, GLfloat g, GLfloat b) {
+    if (!isActive) return;
     glPushMatrix();
     glTranslatef(enemyX, enemyY, 0.0f);  // Translate to (xPos, yPos)
     // Define shapes enclosed within a pair of glBegin and glEnd
@@ -46,6 +47,7 @@ void Enemy::calcBounds(GLdouble left, GLdouble right, GLdouble bottom, GLdouble 
 }
 
 void Enemy::move() {
+    if (!isActive) return;
     // Animation Control - compute the location for the next refresh
     enemyX += xSpeed;
     enemyY += ySpeed;
@@ -68,4 +70,10 @@ void Enemy::move() {
       enemyY = enemyYMin;
       ySpeed = -ySpeed;
    }
+}
+
+int Enemy::getHP(){
+
+
+
 }

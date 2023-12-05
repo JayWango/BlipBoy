@@ -10,6 +10,7 @@
 class Boy {
 public:
     float x, y;
+    float maxhealth = 100.0;
     const float size = 0.2f;
     const int maxBullets = 5; 
     GLdouble minX, maxX, minY, maxY;
@@ -22,6 +23,9 @@ public:
 
     void addBullet(float x, float y);
     void updateBullets();
+    void drawHealthBar(float x, float y, float healthPercent);
+    void decreaseHealth(float amount);
+  
 };
 
 #endif
