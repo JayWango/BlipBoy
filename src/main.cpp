@@ -73,14 +73,13 @@ void spawnEnemy() {
       GLfloat b = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
       
       //add enemies to vector
-      enemies.push_back(Enemy(0.1, 1.33, -1.33, 1, -1, 0.02, 0.007, 100, r, g, b));
+      enemies.push_back(Enemy(0.1, clipAreaXRight, clipAreaXLeft, clipAreaYTop, clipAreaYBottom, 0.02, 0.007, 100, r, g, b));
       enemies.back().activate();
    
       // Reset the spawn time
       lastSpawnTime = std::chrono::steady_clock::now();
       // faster spawning
       spawnIntervalMillis = std::max(1000, spawnIntervalMillis - 100);
-      
    }
 }
 
@@ -105,6 +104,31 @@ void renderGameInfo() {
    for (char character : pointsText) {
       glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, character);
    }
+}
+
+void displayEndGameInfo() {
+      glClear(GL_COLOR_BUFFER_BIT);
+
+      glColor3f(0.0f, 1.0f, 0.0f); 
+      glRasterPos2f(-0.5, 0); 
+      std::string restartText = "Game Over!\nPress 'R' to restart";
+      for (char character : restartText) {
+         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, character);
+      }
+
+      glColor3f(1.0f, 0.0f, 0.0f); 
+      glRasterPos2f(-0.5f, -0.1f); 
+      std::string quitText = "Press 'ESC' to close the window.";
+      for (char character : quitText) {
+         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, character);
+      }
+
+      glColor3f(0.0f, 1.0f, 0.0f); 
+      glRasterPos2f(-0.25f, -0.2f); 
+      std::string finalScore = "Final Score: " + std::to_string(points);
+      for (char character : finalScore) {
+         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, character);
+      }
 }
 
 void initGL() {
@@ -168,21 +192,8 @@ void display() {
       BlipBoy.maxhealth = 0; // Ensure health doesn't go below zero
    }
    if (isGameOver) {
-      glColor3f(0.0f, 1.0f, 0.0f); // Red color for game over text
-      glRasterPos2f(-0.5, clipAreaYTop / 2); // Centered position for game over text
-      std::string restartText = "Game Over!\nPress 'R' to restart";
-      for (char character : restartText) {
-         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, character);
-      }
-
-      glColor3f(1.0f, 0.0f, 0.0f); // Red color for game over text
-      glRasterPos2f(-0.5f, -0.1f); // Centered position for game over text
-      std::string quitText = "Press 'ESC' to close the window.";
-      for (char character : quitText) {
-         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, character);
-      }
+      displayEndGameInfo();
    }
-
    glutSwapBuffers(); // Render now
 };
 
