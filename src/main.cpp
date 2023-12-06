@@ -23,13 +23,13 @@ int refreshMillis = 30;      // Refresh period in milliseconds
 std::chrono::time_point<std::chrono::steady_clock> startTime;
 
 std::chrono::time_point<std::chrono::steady_clock> lastSpawnTime;
-int spawnIntervalMillis = 3000;
+int spawnIntervalMillis = 2000;
 
 // instantiate a blipboy with (x, y)
 Boy BlipBoy(0.0f, 0.0f);
 std::unordered_set<char> pressedKeys;
 
-// instatiate enemy (size, xMax, xMin, yMax, yMin, speedX, speedY)
+// instantiate enemy (size, xMax, xMin, yMax, yMin, speedX, speedY)
 std::vector<Enemy> enemies;
 
 // Projection clipping area
@@ -112,7 +112,7 @@ void display() {
    // Calculate elapsed time
    auto currentTime = std::chrono::steady_clock::now();
    std::chrono::duration<double> elapsedSeconds = currentTime - startTime;
-   int remainingSeconds = 5 - static_cast<int>(elapsedSeconds.count());
+   int remainingSeconds = 10 - static_cast<int>(elapsedSeconds.count());
 
    // Render countdown timer
    glColor3f(1.0f, 1.0f, 1.0f); // Set color to white
@@ -147,30 +147,30 @@ void display() {
    BlipBoy.updateBullets();
    BlipBoy.drawHealthBar(BlipBoy.x - 0.1, BlipBoy.y + 0.2, BlipBoy.maxhealth / 100);
    
+   spawnEnemy();
    for (auto& enemy : enemies) {
       if (enemy.isActive) {
          enemy.drawEnemy(); 
          enemy.drawHealthBar();
-         //enemy.move(); // Move the enemy
+         enemy.move(); // Move the enemy
          // Check collisions with bullets
          for (auto& bullet : BlipBoy.bullets) {
             if (bullet.isActive && checkBulletEnemyCollision(bullet, enemy)) {
                enemy.takeDMG(20);
-               bullet.isActive = false;
+               if (enemy.getHP() <= 0) {
+                  enemy.deactivate();
+                  points++;
                }
+               bullet.isActive = false;
+            }
          }
             // Check collision with the boy
          if (checkBoyEnemyCollision(BlipBoy, enemy)) {
             BlipBoy.maxhealth -= 20.0;
             enemy.deactivate();
          }
-            
       }
    }
-   for(auto& enemy: enemies){
-      enemy.move();
-   }
-   spawnEnemy();
 
    //Game over logic
    if ((remainingSeconds == 0 || BlipBoy.maxhealth <= 0) && !isGameOver) {
@@ -186,7 +186,6 @@ void display() {
       }
       BlipBoy.deactivate();
    }
-
    glutSwapBuffers(); // Render now
 };
 
@@ -219,7 +218,7 @@ void reshape(GLsizei width, GLsizei height) {
    glOrtho(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop, -1.0, 1.0);
 
    BlipBoy.calcBounds(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop);
-
+   
    for(auto & enemy: enemies){
       enemy.calcBounds(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop);
    }
