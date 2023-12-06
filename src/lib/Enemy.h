@@ -17,10 +17,9 @@ class Enemy {
         GLfloat enemyXMax, enemyXMin, enemyYMax, enemyYMin; // enemy's center (x, y) bounds
         GLfloat xSpeed;      // enemy's speed in x and y directions
         GLfloat ySpeed;
+        bool isActive;
 
         Enemy(GLfloat size, GLfloat enemyXMax, GLfloat enemyXMin, GLfloat enemyYMax, GLfloat enemyYMin, GLfloat speedX, GLfloat speedY);
-        bool isActive;
-        Enemy() : isActive(true){}
         void deactivate() { isActive = false; }
         void activate() { isActive = true; }
         int getHP();

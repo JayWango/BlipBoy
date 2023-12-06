@@ -4,9 +4,10 @@
 
 
 Boy::Boy(float startX, float startY)
-    : x(startX), y(startY) {}
+: x(startX), y(startY), isActive(true) {}
 
 void Boy::draw() const {
+    if (!isActive) return;
     const int numSegments = 100; 
     const float radius = size / 2.0f; 
     glColor3f(0.1f, 0.3f, 1.0f); 
@@ -82,12 +83,12 @@ void Boy::drawHealthBar(float x, float y, float healthPercent) {
 
     // Set color for the actual health (green for full health, red for low)
     glColor3f(1.0 - healthPercent, healthPercent, 0.0);
-    float width = 0.2 * healthPercent;
-    glBegin(GL_QUADS);
-    glVertex2f(x, y);
-    glVertex2f(x + width, y);
-    glVertex2f(x + width, y - 0.025);
-    glVertex2f(x, y - 0.025);
+        float width = 0.25 * healthPercent;
+        glBegin(GL_QUADS);
+        glVertex2f(x - 0.0425, y);
+        glVertex2f(x + width, y);
+        glVertex2f(x + width, y - 0.025);
+        glVertex2f(x - 0.0425, y - 0.025);
     glEnd();
 }
 

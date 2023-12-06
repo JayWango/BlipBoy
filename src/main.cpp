@@ -32,6 +32,8 @@ Enemy enemy3(0.1, 1, -1, 1, -1, 0.03, -0.007);
 // Projection clipping area
 GLdouble clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop;
 
+int points = 0;
+
 
 void initGL() {
    // Set "clearing" or background color
@@ -58,6 +60,7 @@ void restartGame() {
    BlipBoy.y = 0.0f;
    BlipBoy.bullets.clear();
    // Reactivate and reset enemies
+   BlipBoy.activate();
    enemy1.generateRandomPos(enemy1.enemyXMax, enemy1.enemyXMin, enemy1.enemyYMax, enemy1.enemyYMin);
    enemy1.activate();
    enemy2.generateRandomPos(enemy1.enemyXMax, enemy1.enemyXMin, enemy1.enemyYMax, enemy1.enemyYMin);
@@ -66,15 +69,9 @@ void restartGame() {
    enemy3.activate();
 
    startTime = std::chrono::steady_clock::now();
-   // isOnCooldown = false;
-   // lastHitTime = std::chrono::steady_clock::now();
 }
 
 bool checkBoyEnemyCollision(const Boy& boy, const Enemy& enemy) {
-   // if (isOnCooldown) {
-   //    return false;
-   // }
-
    float boySizeHalf = boy.size / 2.0f;
    return (boy.x - boySizeHalf < enemy.enemyX + enemy.enemySize && boy.x + boySizeHalf > enemy.enemyX - enemy.enemySize && boy.y - boySizeHalf < enemy.enemyY + enemy.enemySize && boy.y + boySizeHalf > enemy.enemyY - enemy.enemySize);
 }
@@ -88,15 +85,21 @@ void display() {
    // Calculate elapsed time
    auto currentTime = std::chrono::steady_clock::now();
    std::chrono::duration<double> elapsedSeconds = currentTime - startTime;
-   int remainingSeconds = 60 - static_cast<int>(elapsedSeconds.count());
+   int remainingSeconds = 5 - static_cast<int>(elapsedSeconds.count());
 
    // Render countdown timer
    glColor3f(1.0f, 1.0f, 1.0f); // Set color to white
    glRasterPos2f(clipAreaXLeft + 0.1, clipAreaYTop - 0.1); // Position of the timer
-
    std::string timerText = "Time: " + std::to_string(remainingSeconds) + "s";
-
    for (char character : timerText) {
+      glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, character);
+   }
+
+   //Render points counter
+   glColor3f(1.0f, 1.0f, 1.0f); 
+   glRasterPos2f(clipAreaXRight - 0.35, clipAreaYTop - 0.1); 
+   std::string pointsText = "Points: " + std::to_string(points);
+   for (char character : pointsText) {
       glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, character);
    }
 
@@ -107,16 +110,16 @@ void display() {
    }
    BlipBoy.updateBullets();
 
-   if(enemy1.isActive && checkBoyEnemyCollision(BlipBoy, enemy1)){
-      BlipBoy.maxhealth -= 50.0;
+   if (enemy1.isActive && checkBoyEnemyCollision(BlipBoy, enemy1)) {
+      BlipBoy.maxhealth -= 25.0;
       enemy1.deactivate();
    }
-   if(enemy2.isActive && checkBoyEnemyCollision(BlipBoy, enemy2)){
-      BlipBoy.maxhealth -= 50.0;
+   if (enemy2.isActive && checkBoyEnemyCollision(BlipBoy, enemy2)) {
+      BlipBoy.maxhealth -= 25.0;
       enemy2.deactivate();
    }
-   if(enemy3.isActive && checkBoyEnemyCollision(BlipBoy, enemy3)){
-      BlipBoy.maxhealth -= 50.0;
+   if (enemy3.isActive && checkBoyEnemyCollision(BlipBoy, enemy3)) {
+      BlipBoy.maxhealth -= 25.0;
       enemy3.deactivate();
    }
    BlipBoy.drawHealthBar(BlipBoy.x - 0.1, BlipBoy.y + 0.2, BlipBoy.maxhealth / 100);
@@ -125,17 +128,18 @@ void display() {
    enemy3.drawEnemy(0.0f, 1.0f, 0.0f);
 
    //Game over logic
-   if (BlipBoy.maxhealth <= 0 && !isGameOver) {
+   if ((remainingSeconds == 0 || BlipBoy.maxhealth <= 0) && !isGameOver) {
       isGameOver = true;
       BlipBoy.maxhealth = 0; // Ensure health doesn't go below zero
    }
    if (isGameOver) {
       glColor3f(1.0f, 0.0f, 0.0f); // Red color for game over text
       const char* gameOverText = "Game Over!\nPress 'R' to restart";
-      glRasterPos2f(-0.25f, 0.0f); // Centered position for game over text
+      glRasterPos2f(-0.5f, 0.0f); // Centered position for game over text
       for (const char* c = gameOverText; *c != '\0'; c++) {
          glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
       }
+      BlipBoy.deactivate();
    }
  
    glutSwapBuffers(); // Render now
@@ -184,23 +188,24 @@ void reshape(GLsizei width, GLsizei height) {
 
 
 void Timer(int value) {
-   const float boySpeed = 0.03f;
+   if (!isGameOver) {
+      const float boySpeed = 0.03f;
 
-   if (pressedKeys.find('w') != pressedKeys.end()) {
-       BlipBoy.move(0.0f, boySpeed);
+      if (pressedKeys.find('w') != pressedKeys.end()) {
+         BlipBoy.move(0.0f, boySpeed);
+      }
+      if (pressedKeys.find('s') != pressedKeys.end()) {
+         BlipBoy.move(0.0f, -boySpeed);
+      }
+      if (pressedKeys.find('a') != pressedKeys.end()) {
+         BlipBoy.move(-boySpeed, 0.0f);
+      }
+      if (pressedKeys.find('d') != pressedKeys.end()) {
+         BlipBoy.move(boySpeed, 0.0f);
+      }
+      glutPostRedisplay();
    }
-   if (pressedKeys.find('s') != pressedKeys.end()) {
-       BlipBoy.move(0.0f, -boySpeed);
-   }
-   if (pressedKeys.find('a') != pressedKeys.end()) {
-       BlipBoy.move(-boySpeed, 0.0f);
-   }
-   if (pressedKeys.find('d') != pressedKeys.end()) {
-       BlipBoy.move(boySpeed, 0.0f);
-   }
-
-   glutPostRedisplay();
-   glutTimerFunc(30, Timer, 0);
+   glutTimerFunc(refreshMillis, Timer, 0);
 }
 
 void handleKeyPress(unsigned char key, int x, int y) {

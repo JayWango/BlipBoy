@@ -5,6 +5,7 @@ Enemy::Enemy(GLfloat size, GLfloat xMax, GLfloat xMin, GLfloat yMax, GLfloat yMi
         generateRandomPos(xMax, xMin, yMax, yMin);
         xSpeed = speedX;      
         ySpeed = speedY; 
+        isActive = true;
 }
 
 void Enemy::generateRandomPos(GLfloat xMax, GLfloat xMin, GLfloat yMax, GLfloat yMin) {

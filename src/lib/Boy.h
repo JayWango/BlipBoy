@@ -15,6 +15,7 @@ public:
     const int maxBullets = 5; 
     GLdouble minX, maxX, minY, maxY;
     std::vector<Bullet> bullets; 
+    bool isActive;
 
     Boy(float startX, float startY);
     void draw() const;
@@ -25,6 +26,9 @@ public:
     void updateBullets();
     void drawHealthBar(float x, float y, float healthPercent);
     void decreaseHealth(float amount);
+
+    void deactivate() { isActive = false; }
+    void activate() { isActive = true; }
   
 };
 
