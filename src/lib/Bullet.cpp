@@ -23,20 +23,3 @@ void Bullet::draw() const {
         glEnd();
     }
 }
-
-// void Bullet::update() {
-//     // Calculate the direction vector towards the mouse
-//     float dirX = mouseX - x;
-//     float dirY = 800 - mouseY - y; // Flip the y-coordinate due to screen orientation
-
-//     // Normalize the direction vector
-//     float length = sqrt(dirX * dirX + dirY * dirY);
-//     if (length != 0) {
-//         dirX /= length;
-//         dirY /= length;
-//     }
-
-//     // Move the bullet towards the mouse position
-//     x += dirX * speed;
-//     y += dirY * speed;
-// }

@@ -91,7 +91,8 @@ void spawnEnemy(){
       GLfloat g = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
       GLfloat b = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
       //add enemies to vector
-      enemies.emplace_back(0.1, 1, -1, 1, -1, 0.02, 0.007, 100, r, g, b);
+      // enemies.emplace_back(0.1, 1, -1, 1, -1, 0.02, 0.007, 100, r, g, b);
+      enemies.push_back(Enemy(0.1, 1, -1, 1, -1, 0.02, 0.007, 100, r, g, b));
       // enemies.back().generateRandomPos(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop);
       enemies.back().activate();
    
