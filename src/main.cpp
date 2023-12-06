@@ -14,7 +14,6 @@
 #include "lib/Bullet.h"
 #include "lib/Enemy.h"
 
-
 bool isGameOver = false;
 
 int screenWidth;
@@ -58,6 +57,7 @@ void mouse(int button, int state, int x, int y) {
 //restart game function
 void restartGame() {
    isGameOver = false;
+   points = 0;
    BlipBoy.maxhealth = 100; // Reset the player's health
    BlipBoy.x = 0.0f; // Reset the player's position
    BlipBoy.y = 0.0f;
@@ -83,16 +83,16 @@ bool checkBulletEnemyCollision(const Bullet& bullet, const Enemy& enemy){
    return (bullet.x < enemy.enemyX + enemy.enemySize && bullet.x > enemy.enemyX - enemy.enemySize && bullet.y < enemy.enemyY + enemy.enemySize && bullet.y > enemy.enemyY - enemy.enemySize);
 }
 
-void spawnEnemy(){
+void spawnEnemy() {
    auto currentTime = std::chrono::steady_clock::now();
    int elapsedMillis = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastSpawnTime).count();
    if (elapsedMillis >= spawnIntervalMillis) {
       GLfloat r = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
       GLfloat g = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
       GLfloat b = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+      
       //add enemies to vector
-      enemies.emplace_back(0.1, 1.3, -1.3, 1, -1, 0.02, 0.007, 100, r, g, b);
-      // enemies.back().generateRandomPos(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop);
+      enemies.push_back(Enemy(0.1, 1.33, -1.33, 1, -1, 0.02, 0.007, 100, r, g, b));
       enemies.back().activate();
    
       // Reset the spawn time
@@ -182,13 +182,19 @@ void display() {
       BlipBoy.maxhealth = 0; // Ensure health doesn't go below zero
    }
    if (isGameOver) {
-      glColor3f(1.0f, 0.0f, 0.0f); // Red color for game over text
-      const char* gameOverText = "Game Over!\nPress 'R' to restart";
-      glRasterPos2f(-0.5f, 0.0f); // Centered position for game over text
-      for (const char* c = gameOverText; *c != '\0'; c++) {
-         glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
+      glColor3f(0.0f, 1.0f, 0.0f); // Red color for game over text
+      glRasterPos2f(-0.5, clipAreaYTop / 2); // Centered position for game over text
+      std::string restartText = "Game Over!\nPress 'R' to restart";
+      for (char character : restartText) {
+         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, character);
       }
-      BlipBoy.deactivate();
+
+      glColor3f(1.0f, 0.0f, 0.0f); // Red color for game over text
+      glRasterPos2f(-0.5f, -0.1f); // Centered position for game over text
+      std::string quitText = "Press 'ESC' to close the window.";
+      for (char character : quitText) {
+         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, character);
+      }
    }
 
    glutSwapBuffers(); // Render now
@@ -255,11 +261,14 @@ void Timer(int value) {
 
 void handleKeyPress(unsigned char key, int x, int y) {
    pressedKeys.insert(key);
-   if (key == 'r' || key == 'R') {
-      if(isGameOver){
+   if (isGameOver) {
+      if (key == 'r' || key == 'R') {
          restartGame();
       }
    }
+   if (key == 27) {  // ASCII code for the Esc key
+      exit(0);
+   } 
 }
 void handleKeyRelease(unsigned char key, int x, int y) {
    pressedKeys.erase(key);
