@@ -16,12 +16,13 @@
 
 bool isGameOver = false;
 
-int screenWidth;
-int screenHeight;
+int screenWidth = 800;
+int screenHeight = 600;
 int refreshMillis = 30;      // Refresh period in milliseconds
 std::chrono::time_point<std::chrono::steady_clock> startTime;
 std::chrono::time_point<std::chrono::steady_clock> lastSpawnTime;
 int spawnIntervalMillis = 3000;
+int remainingSeconds;
 
 int points = 0;
 // instantiate a blipboy with (x, y)
@@ -100,16 +101,11 @@ void spawnEnemy() {
    }
 }
 
-void display() {
-   // Your rendering code goes here
-   glClear(GL_COLOR_BUFFER_BIT);   // Clear the color buffer with current clearing color
-   glMatrixMode(GL_MODELVIEW);    // To operate on the model-view matrix
-   glLoadIdentity();              // Reset model-view matrix
-
+void renderGameInfo() {
    // Calculate elapsed time
    auto currentTime = std::chrono::steady_clock::now();
    std::chrono::duration<double> elapsedSeconds = currentTime - startTime;
-   int remainingSeconds = 10 - static_cast<int>(elapsedSeconds.count());
+   remainingSeconds = 10 - static_cast<int>(elapsedSeconds.count());
 
    // Render countdown timer
    glColor3f(1.0f, 1.0f, 1.0f); // Set color to white
@@ -126,6 +122,15 @@ void display() {
    for (char character : pointsText) {
       glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, character);
    }
+}
+
+void display() {
+   // Your rendering code goes here
+   glClear(GL_COLOR_BUFFER_BIT);   // Clear the color buffer with current clearing color
+   glMatrixMode(GL_MODELVIEW);    // To operate on the model-view matrix
+   glLoadIdentity();              // Reset model-view matrix
+
+   renderGameInfo();
 
    BlipBoy.draw();
    for (auto& bullet : BlipBoy.bullets) {
@@ -274,7 +279,7 @@ int main(int argc, char** argv) {
    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE); // Use GLUT_DOUBLE for double buffering
 
    glutInitWindowPosition(200, 100);
-   glutInitWindowSize(800, 600);
+   glutInitWindowSize(screenWidth, screenHeight);
    startTime = std::chrono::steady_clock::now(); // Set the start time for the countdown
    glutCreateWindow("BlipBoy");
 
@@ -283,7 +288,6 @@ int main(int argc, char** argv) {
    glutKeyboardFunc(handleKeyPress);
    glutKeyboardUpFunc(handleKeyRelease);
    glutMouseFunc(mouse);
-
 
    glutTimerFunc(0, Timer, 0);     // First timer call immediately
 
