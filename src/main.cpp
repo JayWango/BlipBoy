@@ -20,10 +20,10 @@ int screenWidth;
 int screenHeight;
 int refreshMillis = 30;      // Refresh period in milliseconds
 std::chrono::time_point<std::chrono::steady_clock> startTime;
-
 std::chrono::time_point<std::chrono::steady_clock> lastSpawnTime;
 int spawnIntervalMillis = 3000;
 
+int points = 0;
 // instantiate a blipboy with (x, y)
 Boy BlipBoy(0.0f, 0.0f);
 std::unordered_set<char> pressedKeys;
@@ -33,9 +33,6 @@ std::vector<Enemy> enemies;
 
 // Projection clipping area
 GLdouble clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop;
-
-int points = 0;
-
 
 void initGL() {
    // Set "clearing" or background color
@@ -92,7 +89,7 @@ void spawnEnemy() {
       GLfloat b = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
       
       //add enemies to vector
-      enemies.push_back(Enemy(0.1, 1.33, -1.33, 1, -1, 0.02, 0.007, 100, r, g, b));
+      enemies.emplace_back(0.1, 1.33, -1.33, 1, -1, 0.02, 0.007, 100, r, g, b);
       enemies.back().activate();
    
       // Reset the spawn time
@@ -151,7 +148,7 @@ void display() {
       if (enemy.isActive) {
          enemy.drawEnemy(); 
          enemy.drawHealthBar();
-         //enemy.move(); // Move the enemy
+         enemy.move(); // Move the enemy
          // Check collisions with bullets
          for (auto& bullet : BlipBoy.bullets) {
             if (bullet.isActive && checkBulletEnemyCollision(bullet, enemy)) {
@@ -163,16 +160,13 @@ void display() {
                bullet.isActive = false;
                }
          }
-            // Check collision with the boy
+         // Check collision with the boy
          if (checkBoyEnemyCollision(BlipBoy, enemy)) {
             BlipBoy.maxhealth -= 20.0;
             enemy.deactivate();
          }
             
       }
-   }
-   for(auto& enemy: enemies){
-      enemy.move();
    }
    spawnEnemy();
 
@@ -229,7 +223,6 @@ void reshape(GLsizei width, GLsizei height) {
    glOrtho(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop, -1.0, 1.0);
 
    BlipBoy.calcBounds(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop);
-
    for(auto & enemy: enemies){
       enemy.calcBounds(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop);
    }
