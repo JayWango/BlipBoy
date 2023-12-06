@@ -35,22 +35,6 @@ std::vector<Enemy> enemies;
 // Projection clipping area
 GLdouble clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop;
 
-void initGL() {
-   // Set "clearing" or background color
-   glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Black and opaque
-}
-
-void mouse(int button, int state, int x, int y) {
-   float aspect = static_cast<float>(screenWidth) / static_cast<float>(screenHeight);
-   float newX;
-   float newY;
-
-   if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
-      newX = (static_cast<float>(x) - (screenWidth / 2)) / (screenWidth / 2) * aspect - BlipBoy.x;
-      newY = -((static_cast<float>(y) - (screenHeight / 2)) / (screenHeight / 2)) - BlipBoy.y;
-      BlipBoy.addBullet(newX, newY);
-   }
-}
 
 //restart game function
 void restartGame() {
@@ -63,7 +47,6 @@ void restartGame() {
    // Reactivate and reset enemies
    BlipBoy.activate();
    enemies.clear();
-
    startTime = std::chrono::steady_clock::now();
    lastSpawnTime = std::chrono::steady_clock::now();
    spawnIntervalMillis = 2000;
@@ -90,7 +73,8 @@ void spawnEnemy() {
       GLfloat b = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
       
       //add enemies to vector
-      enemies.emplace_back(0.1, 1.33, -1.33, 1, -1, 0.02, 0.007, 100, r, g, b);
+      // enemies.emplace_back(0.1, 1.33, -1.33, 1, -1, 0.02, 0.007, 100, r, g, b);
+      enemies.push_back(Enemy(0.1, 1.33, -1.33, 1, -1, 0.02, 0.007, 100, r, g, b));
       enemies.back().activate();
    
       // Reset the spawn time
@@ -105,7 +89,7 @@ void renderGameInfo() {
    // Calculate elapsed time
    auto currentTime = std::chrono::steady_clock::now();
    std::chrono::duration<double> elapsedSeconds = currentTime - startTime;
-   remainingSeconds = 10 - static_cast<int>(elapsedSeconds.count());
+   remainingSeconds = 60 - static_cast<int>(elapsedSeconds.count());
 
    // Render countdown timer
    glColor3f(1.0f, 1.0f, 1.0f); // Set color to white
@@ -124,8 +108,12 @@ void renderGameInfo() {
    }
 }
 
+void initGL() {
+   // Set "clearing" or background color
+   glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Black and opaque
+}
+
 void display() {
-   // Your rendering code goes here
    glClear(GL_COLOR_BUFFER_BIT);   // Clear the color buffer with current clearing color
    glMatrixMode(GL_MODELVIEW);    // To operate on the model-view matrix
    glLoadIdentity();              // Reset model-view matrix
@@ -235,7 +223,6 @@ void reshape(GLsizei width, GLsizei height) {
    glMatrixMode(GL_MODELVIEW);
 }
 
-
 void Timer(int value) {
    if (!isGameOver) {
       const float boySpeed = 0.03f;
@@ -255,6 +242,18 @@ void Timer(int value) {
       glutPostRedisplay();
    }
    glutTimerFunc(refreshMillis, Timer, 0);
+}
+
+void mouse(int button, int state, int x, int y) {
+   float aspect = static_cast<float>(screenWidth) / static_cast<float>(screenHeight);
+   float newX;
+   float newY;
+
+   if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+      newX = (static_cast<float>(x) - (screenWidth / 2)) / (screenWidth / 2) * aspect - BlipBoy.x;
+      newY = -((static_cast<float>(y) - (screenHeight / 2)) / (screenHeight / 2)) - BlipBoy.y;
+      BlipBoy.addBullet(newX, newY);
+   }
 }
 
 void handleKeyPress(unsigned char key, int x, int y) {
