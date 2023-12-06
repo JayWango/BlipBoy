@@ -1,5 +1,5 @@
 #include "Bullet.h"
-#include <GLUT/glut.h>
+#include <GL/glut.h>
 
 #include <cmath>
 

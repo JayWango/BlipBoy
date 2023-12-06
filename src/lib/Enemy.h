@@ -1,7 +1,7 @@
 #ifndef ENEMY_H
 #define ENEMY_H
 
-#include <GLUT/glut.h>
+#include <GL/glut.h>
 #include <chrono>
 #include <random>
 
