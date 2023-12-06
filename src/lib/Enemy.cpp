@@ -5,7 +5,7 @@ Enemy::Enemy(GLfloat size, GLfloat xMax, GLfloat xMin, GLfloat yMax, GLfloat yMi
         generateRandomPos(xMax, xMin, yMax, yMin);
         xSpeed = speedX;      
         ySpeed = speedY; 
-        calcBounds(xMin, xMax, yMin, yMax);
+        calcBounds(xMin , xMax, yMin, yMax);
         isActive = true;
 }
 
@@ -78,8 +78,12 @@ void Enemy::move() {
    }
 }
 
+void Enemy::takeDMG(int damage) {
+   HP -= damage;
+}
+
 int Enemy::getHP(){
 
-
+   return HP;
 
 }

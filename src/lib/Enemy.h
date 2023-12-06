@@ -28,12 +28,7 @@ class Enemy {
         void calcBounds(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top);
         void move();
         void generateRandomPos(GLfloat xMax, GLfloat xMin, GLfloat yMax, GLfloat yMin);
-        void takeDMG(int damage){
-            HP -= damage;
-            if(HP <= 0){
-                deactivate();
-            }
-        }
+        void takeDMG(int damage);
         void drawHealthBar() const{
             if (!isActive) return;
 

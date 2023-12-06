@@ -91,7 +91,7 @@ void spawnEnemy(){
       GLfloat g = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
       GLfloat b = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
       //add enemies to vector
-      enemies.emplace_back(0.1, 1, -1, 1, -1, 0.02, 0.007, 100, r, g, b);
+      enemies.emplace_back(0.1, 1.3, -1.3, 1, -1, 0.02, 0.007, 100, r, g, b);
       // enemies.back().generateRandomPos(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop);
       enemies.back().activate();
    
@@ -112,7 +112,7 @@ void display() {
    // Calculate elapsed time
    auto currentTime = std::chrono::steady_clock::now();
    std::chrono::duration<double> elapsedSeconds = currentTime - startTime;
-   int remainingSeconds = 5 - static_cast<int>(elapsedSeconds.count());
+   int remainingSeconds = 10 - static_cast<int>(elapsedSeconds.count());
 
    // Render countdown timer
    glColor3f(1.0f, 1.0f, 1.0f); // Set color to white
@@ -156,6 +156,10 @@ void display() {
          for (auto& bullet : BlipBoy.bullets) {
             if (bullet.isActive && checkBulletEnemyCollision(bullet, enemy)) {
                enemy.takeDMG(20);
+               if (enemy.getHP() <= 0) {
+                  enemy.deactivate();
+                  points++;
+               }
                bullet.isActive = false;
                }
          }
