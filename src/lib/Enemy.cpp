@@ -1,6 +1,6 @@
 #include "Enemy.h"
 
-Enemy::Enemy(GLfloat size, GLfloat xMax, GLfloat xMin, GLfloat yMax, GLfloat yMin, GLfloat speedX, GLfloat speedY): enemySize(size), isActive(true) {
+Enemy::Enemy(GLfloat size, GLfloat xMax, GLfloat xMin, GLfloat yMax, GLfloat yMin, GLfloat speedX, GLfloat speedY, int initialHP, GLfloat r, GLfloat g, GLfloat b): enemySize(size), HP(initialHP), isActive(true), r(r), g(g), b(b) {
         enemySize = size; 
         generateRandomPos(xMax, xMin, yMax, yMin);
         xSpeed = speedX;      
@@ -24,19 +24,22 @@ void Enemy::generateRandomPos(GLfloat xMax, GLfloat xMin, GLfloat yMax, GLfloat 
     while (enemyX < enemySize + 0.1 && enemyY < enemySize + 0.1);
 }
 
-void Enemy::drawEnemy(GLfloat r, GLfloat g, GLfloat b) {
-    if (!isActive) return;
-    glPushMatrix();
-    glTranslatef(enemyX, enemyY, 0.0f);  // Translate to (xPos, yPos)
-    // Define shapes enclosed within a pair of glBegin and glEnd
-    glBegin(GL_QUADS);              // Each set of 4 vertices form a quad
+void Enemy::drawEnemy() {
+   if (!isActive) return;
+   glPushMatrix();
+   glTranslatef(enemyX, enemyY, 0.0f);  // Translate to (xPos, yPos)
+   
+   //for enemy color
+   glColor3f(r,g,b);
+   // Define shapes enclosed within a pair of glBegin and glEnd
+   glBegin(GL_QUADS);              // Each set of 4 vertices form a quad
       glColor3f(r, g, b); // Red
       glVertex2f(-enemySize, enemySize);     // Define vertices in counter-clockwise (CCW) order
       glVertex2f(-enemySize, -enemySize);     //  so that the normal (front-face) is facing you
       glVertex2f(enemySize, -enemySize);
       glVertex2f(enemySize, enemySize);
-    glEnd();
-    glPopMatrix();
+   glEnd();
+   glPopMatrix();
 }
 
 void Enemy::calcBounds(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top) {
