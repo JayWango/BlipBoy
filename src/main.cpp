@@ -20,7 +20,7 @@ int screenWidth = 800;
 int screenHeight = 600;
 int refreshMillis = 30;      // Refresh period in milliseconds
 std::chrono::time_point<std::chrono::steady_clock> startTime;
-std::chrono::time_point<std::chrono::steady_clock> lastSpawnTime;
+std::chrono::time_point<std::chrono::steady_clock> lastSpawnTime = std::chrono::steady_clock::now();
 int spawnIntervalMillis = 3000;
 int remainingSeconds;
 
@@ -73,7 +73,6 @@ void spawnEnemy() {
       GLfloat b = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
       
       //add enemies to vector
-      // enemies.emplace_back(0.1, 1.33, -1.33, 1, -1, 0.02, 0.007, 100, r, g, b);
       enemies.push_back(Enemy(0.1, 1.33, -1.33, 1, -1, 0.02, 0.007, 100, r, g, b));
       enemies.back().activate();
    
