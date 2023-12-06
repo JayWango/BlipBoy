@@ -72,24 +72,55 @@ void Boy::addBullet(float dirX, float dirY) {
 
 
 void Boy::drawHealthBar(float x, float y, float healthPercent) {
-    // Set color for the background of the health bar (grey)
-    glColor3f(0.5, 0.5, 0.5);
+    float barWidth = size * 1.75;
+    float barHeight = 0.01f;
+    float healthPercentage = static_cast<float>(maxhealth) / 100.0f;
+
+    glPushMatrix();
+    glTranslatef(x + 0.1f, y, 0.0f);
+
+    glColor3f(0.5f, 0.5f, 0.5f);
     glBegin(GL_QUADS);
-    glVertex2f(x, y);
-    glVertex2f(x + 0.1, y);
-    glVertex2f(x + 0.1, y - 0.025);
-    glVertex2f(x, y - 0.025);
+        glVertex2f(-barWidth / 2, barHeight);
+        glVertex2f(-barWidth / 2, -barHeight);
+        glVertex2f(barWidth / 2, -barHeight);
+        glVertex2f(barWidth / 2, barHeight);
     glEnd();
 
-    // Set color for the actual health (green for full health, red for low)
     glColor3f(1.0 - healthPercent, healthPercent, 0.0);
-        float width = 0.25 * healthPercent;
-        glBegin(GL_QUADS);
-        glVertex2f(x - 0.0425, y);
-        glVertex2f(x + width, y);
-        glVertex2f(x + width, y - 0.025);
-        glVertex2f(x - 0.0425, y - 0.025);
+    float healthBarWidth = barWidth * healthPercentage;
+    glBegin(GL_QUADS);
+        glVertex2f(-barWidth / 2, barHeight);
+        glVertex2f(-barWidth / 2 + healthBarWidth, barHeight);
+        glVertex2f(-barWidth / 2 + healthBarWidth, -barHeight);
+        glVertex2f(-barWidth / 2, -barHeight);
     glEnd();
+
+    glPopMatrix();
+
+
+
+
+
+
+    // Set color for the background of the health bar (grey)
+    // glColor3f(0.5, 0.5, 0.5);
+    // glBegin(GL_QUADS);
+    // glVertex2f(x, y);
+    // glVertex2f(x + 0.1, y);
+    // glVertex2f(x + 0.1, y - 0.025);
+    // glVertex2f(x, y - 0.025);
+    // glEnd();
+
+    // // Set color for the actual health (green for full health, red for low)
+    // glColor3f(1.0 - healthPercent, healthPercent, 0.0);
+    //     float width = 0.25 * healthPercent;
+    //     glBegin(GL_QUADS);
+    //     glVertex2f(x, y);
+    //     glVertex2f(x + width, y);
+    //     glVertex2f(x + width, y - 0.025);
+    //     glVertex2f(x, y - 0.025);
+    // glEnd();
 }
 
 void Boy::decreaseHealth(float amount) {
