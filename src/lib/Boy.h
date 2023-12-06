@@ -12,7 +12,7 @@ public:
     float x, y;
     float maxhealth = 100.0;
     const float size = 0.2f;
-    const int maxBullets = 5; 
+    const int maxBullets = 1000; 
     GLdouble minX, maxX, minY, maxY;
     std::vector<Bullet> bullets; 
     bool isActive;

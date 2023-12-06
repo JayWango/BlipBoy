@@ -7,6 +7,8 @@
 #include <sstream>
 #include <cstdlib>
 #include <random>
+#include <vector>
+#include <cstdlib>
 
 #include "lib/Boy.h"
 #include "lib/Bullet.h"
@@ -20,14 +22,15 @@ int screenHeight;
 int refreshMillis = 30;      // Refresh period in milliseconds
 std::chrono::time_point<std::chrono::steady_clock> startTime;
 
+std::chrono::time_point<std::chrono::steady_clock> lastSpawnTime;
+int spawnIntervalMillis = 3000;
+
 // instantiate a blipboy with (x, y)
 Boy BlipBoy(0.0f, 0.0f);
 std::unordered_set<char> pressedKeys;
 
 // instatiate enemy (size, xMax, xMin, yMax, yMin, speedX, speedY)
-Enemy enemy1(0.1, 1, -1, 1, -1, 0.02, 0.007);
-Enemy enemy2(0.1, 1, -1, 1, -1, 0.04, 0.01);
-Enemy enemy3(0.1, 1, -1, 1, -1, 0.03, -0.007);
+std::vector<Enemy> enemies;
 
 // Projection clipping area
 GLdouble clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop;
@@ -61,19 +64,43 @@ void restartGame() {
    BlipBoy.bullets.clear();
    // Reactivate and reset enemies
    BlipBoy.activate();
-   enemy1.generateRandomPos(enemy1.enemyXMax, enemy1.enemyXMin, enemy1.enemyYMax, enemy1.enemyYMin);
-   enemy1.activate();
-   enemy2.generateRandomPos(enemy1.enemyXMax, enemy1.enemyXMin, enemy1.enemyYMax, enemy1.enemyYMin);
-   enemy2.activate();
-   enemy3.generateRandomPos(enemy1.enemyXMax, enemy1.enemyXMin, enemy1.enemyYMax, enemy1.enemyYMin);
-   enemy3.activate();
+   enemies.clear();
 
    startTime = std::chrono::steady_clock::now();
+   lastSpawnTime = std::chrono::steady_clock::now();
+   spawnIntervalMillis = 2000;
 }
 
 bool checkBoyEnemyCollision(const Boy& boy, const Enemy& enemy) {
    float boySizeHalf = boy.size / 2.0f;
    return (boy.x - boySizeHalf < enemy.enemyX + enemy.enemySize && boy.x + boySizeHalf > enemy.enemyX - enemy.enemySize && boy.y - boySizeHalf < enemy.enemyY + enemy.enemySize && boy.y + boySizeHalf > enemy.enemyY - enemy.enemySize);
+}
+
+bool checkBulletEnemyCollision(const Bullet& bullet, const Enemy& enemy){
+   if(!enemy.isActive){
+      return false;
+   }
+   return (bullet.x < enemy.enemyX + enemy.enemySize && bullet.x > enemy.enemyX - enemy.enemySize && bullet.y < enemy.enemyY + enemy.enemySize && bullet.y > enemy.enemyY - enemy.enemySize);
+}
+
+void spawnEnemy(){
+   auto currentTime = std::chrono::steady_clock::now();
+   int elapsedMillis = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastSpawnTime).count();
+   if (elapsedMillis >= spawnIntervalMillis) {
+      GLfloat r = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+      GLfloat g = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+      GLfloat b = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+      //add enemies to vector
+      enemies.emplace_back(0.1, 1, -1, 1, -1, 0.02, 0.007, 100, r, g, b);
+      // enemies.back().generateRandomPos(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop);
+      enemies.back().activate();
+   
+      // Reset the spawn time
+      lastSpawnTime = std::chrono::steady_clock::now();
+      // faster spawning
+      spawnIntervalMillis = std::max(1000, spawnIntervalMillis - 100);
+      
+   }
 }
 
 void display() {
@@ -108,24 +135,42 @@ void display() {
       bullet.update(); // Update bullet positions
       bullet.draw();   // Draw updated bullets
    }
+   //remove inactive bullets
+   auto it = BlipBoy.bullets.begin();
+    while (it != BlipBoy.bullets.end()) {
+      if (!it->isActive) {
+         it = BlipBoy.bullets.erase(it);
+      } else {
+         ++it;
+      }
+   }
    BlipBoy.updateBullets();
-
-   if (enemy1.isActive && checkBoyEnemyCollision(BlipBoy, enemy1)) {
-      BlipBoy.maxhealth -= 25.0;
-      enemy1.deactivate();
-   }
-   if (enemy2.isActive && checkBoyEnemyCollision(BlipBoy, enemy2)) {
-      BlipBoy.maxhealth -= 25.0;
-      enemy2.deactivate();
-   }
-   if (enemy3.isActive && checkBoyEnemyCollision(BlipBoy, enemy3)) {
-      BlipBoy.maxhealth -= 25.0;
-      enemy3.deactivate();
-   }
    BlipBoy.drawHealthBar(BlipBoy.x - 0.1, BlipBoy.y + 0.2, BlipBoy.maxhealth / 100);
-   enemy1.drawEnemy(1.0f, 1.0f, 0.0f);
-   enemy2.drawEnemy(1.0f, 0.0f, 0.0f);
-   enemy3.drawEnemy(0.0f, 1.0f, 0.0f);
+   
+   for (auto& enemy : enemies) {
+      if (enemy.isActive) {
+         enemy.drawEnemy(); 
+         enemy.drawHealthBar();
+         //enemy.move(); // Move the enemy
+         // Check collisions with bullets
+         for (auto& bullet : BlipBoy.bullets) {
+            if (bullet.isActive && checkBulletEnemyCollision(bullet, enemy)) {
+               enemy.takeDMG(20);
+               bullet.isActive = false;
+               }
+         }
+            // Check collision with the boy
+         if (checkBoyEnemyCollision(BlipBoy, enemy)) {
+            BlipBoy.maxhealth -= 20.0;
+            enemy.deactivate();
+         }
+            
+      }
+   }
+   for(auto& enemy: enemies){
+      enemy.move();
+   }
+   spawnEnemy();
 
    //Game over logic
    if ((remainingSeconds == 0 || BlipBoy.maxhealth <= 0) && !isGameOver) {
@@ -141,13 +186,8 @@ void display() {
       }
       BlipBoy.deactivate();
    }
- 
-   glutSwapBuffers(); // Render now
 
-   // Animation Control - compute the location for the next refresh
-   enemy1.move();
-   enemy2.move();
-   enemy3.move();
+   glutSwapBuffers(); // Render now
 };
 
 void reshape(GLsizei width, GLsizei height) {
@@ -179,9 +219,10 @@ void reshape(GLsizei width, GLsizei height) {
    glOrtho(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop, -1.0, 1.0);
 
    BlipBoy.calcBounds(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop);
-   enemy1.calcBounds(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop);
-   enemy2.calcBounds(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop);
-   enemy3.calcBounds(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop);
+
+   for(auto & enemy: enemies){
+      enemy.calcBounds(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop);
+   }
 
    glMatrixMode(GL_MODELVIEW);
 }
@@ -221,6 +262,8 @@ void handleKeyRelease(unsigned char key, int x, int y) {
 }
 
 int main(int argc, char** argv) {
+   // random seed for colors
+   srand(static_cast<unsigned int>(time(NULL)));
    glutInit(&argc, argv);
    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE); // Use GLUT_DOUBLE for double buffering
 
