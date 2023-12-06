@@ -142,7 +142,7 @@ void display() {
       if (enemy.isActive) {
          enemy.drawEnemy(); 
          enemy.drawHealthBar();
-         enemy.move(); // Move the enemy
+         //enemy.move(); // Move the enemy
          // Check collisions with bullets
          for (auto& bullet : BlipBoy.bullets) {
             if (bullet.isActive && checkBulletEnemyCollision(bullet, enemy)) {
@@ -157,6 +157,9 @@ void display() {
          }
             
       }
+   }
+   for(auto& enemy: enemies){
+      enemy.move();
    }
    spawnEnemy();
 

@@ -5,6 +5,7 @@ Enemy::Enemy(GLfloat size, GLfloat xMax, GLfloat xMin, GLfloat yMax, GLfloat yMi
         generateRandomPos(xMax, xMin, yMax, yMin);
         xSpeed = speedX;      
         ySpeed = speedY; 
+        calcBounds(xMin, xMax, yMin, yMax);
 }
 
 void Enemy::generateRandomPos(GLfloat xMax, GLfloat xMin, GLfloat yMax, GLfloat yMin) {
@@ -17,6 +18,7 @@ void Enemy::generateRandomPos(GLfloat xMax, GLfloat xMin, GLfloat yMax, GLfloat 
     std::uniform_real_distribution<double> yDistribution(yMin, yMax);
 
     // Generate random coordinates until a non-zero coordinate pair is obtained
+    
     do {
         enemyX = xDistribution(generator);
         enemyY = yDistribution(generator);
