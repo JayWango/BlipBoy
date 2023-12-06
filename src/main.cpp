@@ -61,12 +61,8 @@ void restartGame() {
    BlipBoy.y = 0.0f;
    BlipBoy.bullets.clear();
    // Reactivate and reset enemies
-   for(auto & enemy:enemies){
-      enemy.generateRandomPos(enemy.enemyXMax, enemy.enemyXMin, enemy.enemyYMax, enemy.enemyYMin);
-      enemy.activate();
-   }
-
    enemies.clear();
+
    startTime = std::chrono::steady_clock::now();
    lastSpawnTime = std::chrono::steady_clock::now();
    spawnIntervalMillis = 2000;
@@ -93,7 +89,7 @@ void spawnEnemy(){
       GLfloat b = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
       //add enemies to vector
       enemies.emplace_back(0.1, 1, -1, 1, -1, 0.02, 0.007, 100, r, g, b);
-      enemies.back().generateRandomPos(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop);
+      // enemies.back().generateRandomPos(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop);
       enemies.back().activate();
    
       // Reset the spawn time
@@ -141,6 +137,7 @@ void display() {
    }
    BlipBoy.updateBullets();
    BlipBoy.drawHealthBar(BlipBoy.x - 0.1, BlipBoy.y + 0.2, BlipBoy.maxhealth / 100);
+   
    for (auto& enemy : enemies) {
       if (enemy.isActive) {
          enemy.drawEnemy(); 
@@ -162,10 +159,6 @@ void display() {
       }
    }
    spawnEnemy();
-   
-   // Remove inactive bullets and enemies
-   //BlipBoy.bullets.erase(std::remove_if(BlipBoy.bullets.begin(), BlipBoy.bullets.end(), [](const Bullet& b) { return !b.isActive; }), BlipBoy.bullets.end());
-   //enemies.erase(std::remove_if(enemies.begin(), enemies.end(), [](const Enemy& e) { return !e.isActive; }), enemies.end());
 
    //Game over logic
    if (BlipBoy.maxhealth <= 0 && !isGameOver) {
