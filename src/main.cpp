@@ -71,10 +71,35 @@ void spawnEnemy() {
       GLfloat r = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
       GLfloat g = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
       GLfloat b = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
-      
-      //add enemies to vector
-      enemies.push_back(Enemy(0.1, clipAreaXRight, clipAreaXLeft, clipAreaYTop, clipAreaYBottom, 0.02, 0.007, 100, r, g, b));
-      enemies.back().activate();
+      int enemyID = rand( ) % 3;
+      // generates a random enemy of random difficulty
+      if(enemyID == 0){
+         //red enemies
+         r=255;
+         g=0;
+         b=0;
+         //add enemies to vector
+         enemies.push_back(Enemy(0.1, clipAreaXRight, clipAreaXLeft, clipAreaYTop, clipAreaYBottom, 0.02, 0.007, 5, 5, r, g, b));
+         enemies.back().activate();
+      }
+      else if(enemyID == 1){
+         //yellow enemies
+         r=255;
+         g=255;
+         b=0;
+         //add enemies to vector
+         enemies.push_back(Enemy(0.1, clipAreaXRight, clipAreaXLeft, clipAreaYTop, clipAreaYBottom, 0.04, 0.014, 2, 2, r, g, b));
+         enemies.back().activate();
+      }
+      else {
+         //blue enemies
+         r=0;
+         g=0;
+         b=255;
+         //add enemies to vector
+         enemies.push_back(Enemy(0.1, clipAreaXRight, clipAreaXLeft, clipAreaYTop, clipAreaYBottom, 0.01, 0.004, 10, 10, r, g, b));
+         enemies.back().activate();
+      }
    
       // Reset the spawn time
       lastSpawnTime = std::chrono::steady_clock::now();
@@ -105,10 +130,24 @@ void renderGameInfo() {
       glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, character);
    }
 }
+void displayStartGameInfo() {
+      glClear(GL_COLOR_BUFFER_BIT);
+      glColor3f(0.0f, 1.0f, 0.0f); 
+      glRasterPos2f(-0.5, 0); 
+      std::string titleText = "BLIPBOY";
+      for (char character : titleText) {
+         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, character);
+      }
+      glColor3f(1.0f, 0.0f, 0.0f); 
+      glRasterPos2f(-0.5f, -0.1f); 
+      std::string StartText = "Press any key to Start";
+      for (char character : StartText) {
+         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, character);
+      }
+}
 
 void displayEndGameInfo() {
       glClear(GL_COLOR_BUFFER_BIT);
-
       glColor3f(0.0f, 1.0f, 0.0f); 
       glRasterPos2f(-0.5, 0); 
       std::string restartText = "Game Over!\nPress 'R' to restart";
@@ -140,7 +179,6 @@ void display() {
    glClear(GL_COLOR_BUFFER_BIT);   // Clear the color buffer with current clearing color
    glMatrixMode(GL_MODELVIEW);    // To operate on the model-view matrix
    glLoadIdentity();              // Reset model-view matrix
-
    renderGameInfo();
 
    BlipBoy.draw();
@@ -168,7 +206,7 @@ void display() {
          // Check collisions with bullets
          for (auto& bullet : BlipBoy.bullets) {
             if (bullet.isActive && checkBulletEnemyCollision(bullet, enemy)) {
-               enemy.takeDMG(20);
+               enemy.takeDMG(1);
                if (enemy.getHP() <= 0) {
                   enemy.deactivate();
                   points++;
