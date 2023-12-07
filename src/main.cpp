@@ -79,7 +79,7 @@ void spawnEnemy() {
          g=0;
          b=0;
          //add enemies to vector
-         enemies.push_back(Enemy(0.1, clipAreaXRight, clipAreaXLeft, clipAreaYTop, clipAreaYBottom, 0.02, 0.007, 5, 5, r, g, b));
+         enemies.push_back(Enemy(0.1, clipAreaXRight, clipAreaXLeft, clipAreaYTop, clipAreaYBottom, 0.02, 0.007, 5, 5, r, g, b, 2));
          enemies.back().activate();
       }
       else if(enemyID == 1){
@@ -88,7 +88,7 @@ void spawnEnemy() {
          g=255;
          b=0;
          //add enemies to vector
-         enemies.push_back(Enemy(0.1, clipAreaXRight, clipAreaXLeft, clipAreaYTop, clipAreaYBottom, 0.04, 0.014, 2, 2, r, g, b));
+         enemies.push_back(Enemy(0.1, clipAreaXRight, clipAreaXLeft, clipAreaYTop, clipAreaYBottom, 0.04, 0.014, 2, 2, r, g, b, 1));
          enemies.back().activate();
       }
       else {
@@ -97,7 +97,7 @@ void spawnEnemy() {
          g=0;
          b=255;
          //add enemies to vector
-         enemies.push_back(Enemy(0.1, clipAreaXRight, clipAreaXLeft, clipAreaYTop, clipAreaYBottom, 0.01, 0.004, 10, 10, r, g, b));
+         enemies.push_back(Enemy(0.1, clipAreaXRight, clipAreaXLeft, clipAreaYTop, clipAreaYBottom, 0.01, 0.004, 10, 10, r, g, b, 3));
          enemies.back().activate();
       }
    

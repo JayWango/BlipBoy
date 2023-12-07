@@ -1,6 +1,6 @@
 #include "Enemy.h"
 
-Enemy::Enemy(GLfloat size, GLfloat xMax, GLfloat xMin, GLfloat yMax, GLfloat yMin, GLfloat speedX, GLfloat speedY, int initialHP, int HPMax, GLfloat r, GLfloat g, GLfloat b): enemySize(size), HP(initialHP), maxHP(HPMax), isActive(true), r(r), g(g), b(b) {
+Enemy::Enemy(GLfloat size, GLfloat xMax, GLfloat xMin, GLfloat yMax, GLfloat yMin, GLfloat speedX, GLfloat speedY, int initialHP, int HPMax, GLfloat r, GLfloat g, GLfloat b, int points): enemySize(size), HP(initialHP), maxHP(HPMax), isActive(true), r(r), g(g), b(b), pts(points) {
         enemySize = size; 
         generateRandomPos(xMax, xMin, yMax, yMin);
         xSpeed = speedX;      
