@@ -4,9 +4,10 @@
 
 
 Boy::Boy(float startX, float startY)
-    : x(startX), y(startY) {}
+: x(startX), y(startY), isActive(true) {}
 
 void Boy::draw() const {
+    if (!isActive) return;
     const int numSegments = 100; 
     const float radius = size / 2.0f; 
     glColor3f(0.1f, 0.3f, 1.0f); 
@@ -64,7 +65,40 @@ void Boy::addBullet(float dirX, float dirY) {
             dirY /= length;
         }
 
-        bullets.push_back(Bullet(x, y, dirX, dirY, 0.03f));
+        bullets.push_back(Bullet(x, y, dirX, dirY, 0.06f));
         bullets.back().update();
     }
+}
+
+
+void Boy::drawHealthBar(float x, float y, float healthPercent) {
+    float barWidth = size * 1.75;
+    float barHeight = 0.01f;
+    float healthPercentage = static_cast<float>(maxhealth) / 100.0f;
+
+    glPushMatrix();
+    glTranslatef(x + 0.1f, y, 0.0f);
+
+    glColor3f(0.5f, 0.5f, 0.5f);
+    glBegin(GL_QUADS);
+        glVertex2f(-barWidth / 2, barHeight);
+        glVertex2f(-barWidth / 2, -barHeight);
+        glVertex2f(barWidth / 2, -barHeight);
+        glVertex2f(barWidth / 2, barHeight);
+    glEnd();
+
+    glColor3f(1.0 - healthPercent, healthPercent, 0.0);
+    float healthBarWidth = barWidth * healthPercentage;
+    glBegin(GL_QUADS);
+        glVertex2f(-barWidth / 2, barHeight);
+        glVertex2f(-barWidth / 2 + healthBarWidth, barHeight);
+        glVertex2f(-barWidth / 2 + healthBarWidth, -barHeight);
+        glVertex2f(-barWidth / 2, -barHeight);
+    glEnd();
+
+    glPopMatrix();
+}
+
+void Boy::decreaseHealth(float amount) {
+    maxhealth = std::max(0.0f, maxhealth - amount);
 }

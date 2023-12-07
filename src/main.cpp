@@ -4,69 +4,197 @@
 #include <chrono>
 #include <unordered_set>
 #include <iostream>
+#include <sstream>
+#include <cstdlib>
+#include <random>
+#include <vector>
+#include <cstdlib>
 
 #include "lib/Boy.h"
 #include "lib/Bullet.h"
 #include "lib/Enemy.h"
 
+bool isGameOver = false;
 
-int screenWidth;
-int screenHeight;
+int screenWidth = 800;
+int screenHeight = 600;
 int refreshMillis = 30;      // Refresh period in milliseconds
+std::chrono::time_point<std::chrono::steady_clock> startTime;
+std::chrono::time_point<std::chrono::steady_clock> lastSpawnTime = std::chrono::steady_clock::now();
+int spawnIntervalMillis = 3000;
+int remainingSeconds;
 
+int points = 0;
 // instantiate a blipboy with (x, y)
 Boy BlipBoy(0.0f, 0.0f);
 std::unordered_set<char> pressedKeys;
 
-// instatiate enemy (size, x, y, xMax, xMin, yMax, yMin, speedX, speedY)
-Enemy enemy1(0.1, 10, 0, 0.02, 0.007);
-Enemy enemy2(0.1, -10, 0, 0.04, 0.01);
-Enemy enemy3(0.1, 0, 10, 0.03, -0.007);
+// instatiate enemy (size, xMax, xMin, yMax, yMin, speedX, speedY)
+std::vector<Enemy> enemies;
 
 // Projection clipping area
 GLdouble clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop;
 
+
+//restart game function
+void restartGame() {
+   isGameOver = false;
+   points = 0;
+   BlipBoy.maxhealth = 100; // Reset the player's health
+   BlipBoy.x = 0.0f; // Reset the player's position
+   BlipBoy.y = 0.0f;
+   BlipBoy.bullets.clear();
+   // Reactivate and reset enemies
+   BlipBoy.activate();
+   enemies.clear();
+   startTime = std::chrono::steady_clock::now();
+   lastSpawnTime = std::chrono::steady_clock::now();
+   spawnIntervalMillis = 2000;
+}
+
+bool checkBoyEnemyCollision(const Boy& boy, const Enemy& enemy) {
+   float boySizeHalf = boy.size / 2.0f;
+   return (boy.x - boySizeHalf < enemy.enemyX + enemy.enemySize && boy.x + boySizeHalf > enemy.enemyX - enemy.enemySize && boy.y - boySizeHalf < enemy.enemyY + enemy.enemySize && boy.y + boySizeHalf > enemy.enemyY - enemy.enemySize);
+}
+
+bool checkBulletEnemyCollision(const Bullet& bullet, const Enemy& enemy){
+   if(!enemy.isActive){
+      return false;
+   }
+   return (bullet.x < enemy.enemyX + enemy.enemySize && bullet.x > enemy.enemyX - enemy.enemySize && bullet.y < enemy.enemyY + enemy.enemySize && bullet.y > enemy.enemyY - enemy.enemySize);
+}
+
+void spawnEnemy() {
+   auto currentTime = std::chrono::steady_clock::now();
+   int elapsedMillis = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastSpawnTime).count();
+   if (elapsedMillis >= spawnIntervalMillis) {
+      GLfloat r = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+      GLfloat g = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+      GLfloat b = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+      
+      //add enemies to vector
+      enemies.push_back(Enemy(0.1, clipAreaXRight, clipAreaXLeft, clipAreaYTop, clipAreaYBottom, 0.02, 0.007, 100, r, g, b));
+      enemies.back().activate();
+   
+      // Reset the spawn time
+      lastSpawnTime = std::chrono::steady_clock::now();
+      // faster spawning
+      spawnIntervalMillis = std::max(1000, spawnIntervalMillis - 100);
+   }
+}
+
+void renderGameInfo() {
+   // Calculate elapsed time
+   auto currentTime = std::chrono::steady_clock::now();
+   std::chrono::duration<double> elapsedSeconds = currentTime - startTime;
+   remainingSeconds = 60 - static_cast<int>(elapsedSeconds.count());
+
+   // Render countdown timer
+   glColor3f(1.0f, 1.0f, 1.0f); // Set color to white
+   glRasterPos2f(clipAreaXLeft + 0.1, clipAreaYTop - 0.1); // Position of the timer
+   std::string timerText = "Time: " + std::to_string(remainingSeconds) + "s";
+   for (char character : timerText) {
+      glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, character);
+   }
+
+   //Render points counter
+   glColor3f(1.0f, 1.0f, 1.0f); 
+   glRasterPos2f(clipAreaXRight - 0.35, clipAreaYTop - 0.1); 
+   std::string pointsText = "Points: " + std::to_string(points);
+   for (char character : pointsText) {
+      glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, character);
+   }
+}
+
+void displayEndGameInfo() {
+      glClear(GL_COLOR_BUFFER_BIT);
+
+      glColor3f(0.0f, 1.0f, 0.0f); 
+      glRasterPos2f(-0.5, 0); 
+      std::string restartText = "Game Over!\nPress 'R' to restart";
+      for (char character : restartText) {
+         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, character);
+      }
+
+      glColor3f(1.0f, 0.0f, 0.0f); 
+      glRasterPos2f(-0.5f, -0.1f); 
+      std::string quitText = "Press 'ESC' to close the window.";
+      for (char character : quitText) {
+         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, character);
+      }
+
+      glColor3f(0.0f, 1.0f, 0.0f); 
+      glRasterPos2f(-0.25f, -0.2f); 
+      std::string finalScore = "Final Score: " + std::to_string(points);
+      for (char character : finalScore) {
+         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, character);
+      }
+}
 
 void initGL() {
    // Set "clearing" or background color
    glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Black and opaque
 }
 
-void mouse(int button, int state, int x, int y) {
-   float aspect = static_cast<float>(screenWidth) / static_cast<float>(screenHeight);
-   float newX;
-   float newY;
-
-   if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
-      newX = (static_cast<float>(x) - (screenWidth / 2)) / (screenWidth / 2) * aspect - BlipBoy.x;
-      newY = -((static_cast<float>(y) - (screenHeight / 2)) / (screenHeight / 2)) - BlipBoy.y;
-      BlipBoy.addBullet(newX, newY);
-   }
-}
-
 void display() {
-   // Your rendering code goes here
    glClear(GL_COLOR_BUFFER_BIT);   // Clear the color buffer with current clearing color
    glMatrixMode(GL_MODELVIEW);    // To operate on the model-view matrix
    glLoadIdentity();              // Reset model-view matrix
+
+   renderGameInfo();
 
    BlipBoy.draw();
    for (auto& bullet : BlipBoy.bullets) {
       bullet.update(); // Update bullet positions
       bullet.draw();   // Draw updated bullets
    }
+   //remove inactive bullets
+   auto it = BlipBoy.bullets.begin();
+    while (it != BlipBoy.bullets.end()) {
+      if (!it->isActive) {
+         it = BlipBoy.bullets.erase(it);
+      } else {
+         ++it;
+      }
+   }
    BlipBoy.updateBullets();
+   BlipBoy.drawHealthBar(BlipBoy.x - 0.1, BlipBoy.y + 0.2, BlipBoy.maxhealth / 100);
+   
+   for (auto& enemy : enemies) {
+      if (enemy.isActive) {
+         enemy.drawEnemy(); 
+         enemy.drawHealthBar();
+         enemy.move(); // Move the enemy
+         // Check collisions with bullets
+         for (auto& bullet : BlipBoy.bullets) {
+            if (bullet.isActive && checkBulletEnemyCollision(bullet, enemy)) {
+               enemy.takeDMG(20);
+               if (enemy.getHP() <= 0) {
+                  enemy.deactivate();
+                  points++;
+               }
+               bullet.isActive = false;
+               }
+         }
+         // Check collision with the boy
+         if (checkBoyEnemyCollision(BlipBoy, enemy)) {
+            BlipBoy.maxhealth -= 20.0;
+            enemy.deactivate();
+         }
+            
+      }
+   }
+   spawnEnemy();
 
-   enemy1.drawEnemy(1.0f, 1.0f, 0.0f);
-   enemy2.drawEnemy(1.0f, 0.0f, 0.0f);
-   enemy3.drawEnemy(0.0f, 1.0f, 0.0f);
- 
+   //Game over logic
+   if ((remainingSeconds == 0 || BlipBoy.maxhealth <= 0) && !isGameOver) {
+      isGameOver = true;
+      BlipBoy.maxhealth = 0; // Ensure health doesn't go below zero
+   }
+   if (isGameOver) {
+      displayEndGameInfo();
+   }
    glutSwapBuffers(); // Render now
-
-   // Animation Control - compute the location for the next refresh
-   enemy1.move();
-   enemy2.move();
-   enemy3.move();
 };
 
 void reshape(GLsizei width, GLsizei height) {
@@ -98,47 +226,70 @@ void reshape(GLsizei width, GLsizei height) {
    glOrtho(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop, -1.0, 1.0);
 
    BlipBoy.calcBounds(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop);
-   enemy1.calcBounds(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop);
-   enemy2.calcBounds(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop);
-   enemy3.calcBounds(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop);
+   for(auto & enemy: enemies){
+      enemy.calcBounds(clipAreaXLeft, clipAreaXRight, clipAreaYBottom, clipAreaYTop);
+   }
 
    glMatrixMode(GL_MODELVIEW);
 }
 
-
 void Timer(int value) {
-   const float boySpeed = 0.03f;
+   if (!isGameOver) {
+      const float boySpeed = 0.03f;
 
-   if (pressedKeys.find('w') != pressedKeys.end()) {
-       BlipBoy.move(0.0f, boySpeed);
+      if (pressedKeys.find('w') != pressedKeys.end()) {
+         BlipBoy.move(0.0f, boySpeed);
+      }
+      if (pressedKeys.find('s') != pressedKeys.end()) {
+         BlipBoy.move(0.0f, -boySpeed);
+      }
+      if (pressedKeys.find('a') != pressedKeys.end()) {
+         BlipBoy.move(-boySpeed, 0.0f);
+      }
+      if (pressedKeys.find('d') != pressedKeys.end()) {
+         BlipBoy.move(boySpeed, 0.0f);
+      }
+      glutPostRedisplay();
    }
-   if (pressedKeys.find('s') != pressedKeys.end()) {
-       BlipBoy.move(0.0f, -boySpeed);
-   }
-   if (pressedKeys.find('a') != pressedKeys.end()) {
-       BlipBoy.move(-boySpeed, 0.0f);
-   }
-   if (pressedKeys.find('d') != pressedKeys.end()) {
-       BlipBoy.move(boySpeed, 0.0f);
-   }
+   glutTimerFunc(refreshMillis, Timer, 0);
+}
 
-   glutPostRedisplay();
-   glutTimerFunc(30, Timer, 0);
+void mouse(int button, int state, int x, int y) {
+   float aspect = static_cast<float>(screenWidth) / static_cast<float>(screenHeight);
+   float newX;
+   float newY;
+
+   if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+      newX = (static_cast<float>(x) - (screenWidth / 2)) / (screenWidth / 2) * aspect - BlipBoy.x;
+      newY = -((static_cast<float>(y) - (screenHeight / 2)) / (screenHeight / 2)) - BlipBoy.y;
+      BlipBoy.addBullet(newX, newY);
+   }
 }
 
 void handleKeyPress(unsigned char key, int x, int y) {
    pressedKeys.insert(key);
+   if (isGameOver) {
+      if (key == 'r' || key == 'R') {
+         restartGame();
+      }
+   }
+   if (key == 27) {  // ASCII code for the Esc key
+      exit(0);
+   } 
 }
 void handleKeyRelease(unsigned char key, int x, int y) {
    pressedKeys.erase(key);
 }
 
 int main(int argc, char** argv) {
+   // random seed for colors
+   srand(static_cast<unsigned int>(time(NULL)));
    glutInit(&argc, argv);
    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE); // Use GLUT_DOUBLE for double buffering
 
    glutInitWindowPosition(200, 100);
-   glutInitWindowSize(800, 600);
+   glutInitWindowSize(screenWidth, screenHeight);
+   startTime = std::chrono::steady_clock::now(); // Set the start time for the countdown
    glutCreateWindow("BlipBoy");
 
    glutDisplayFunc(display); // Set the display callback function
