@@ -9,7 +9,6 @@ class Enemy {
     private:
         int HP;                 // yellow enemies = 2 HP, red = 5 HP, blue = 10 HP
         int maxHP;
-        int pts;
 
     public:
         GLfloat enemySize;      // this defines the "size" of the square  
@@ -20,6 +19,7 @@ class Enemy {
         GLfloat ySpeed;
         bool isActive;
         GLfloat r,g,b;
+        int pts; //how many points the enemy is worth
 
         Enemy(GLfloat size, GLfloat enemyXMax, GLfloat enemyXMin, GLfloat enemyYMax, GLfloat enemyYMin, GLfloat speedX, GLfloat speedY, int initialHP, int HPMax, GLfloat r, GLfloat g, GLfloat b, int points);
         void deactivate() { isActive = false; }

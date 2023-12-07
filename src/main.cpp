@@ -208,8 +208,8 @@ void display() {
             if (bullet.isActive && checkBulletEnemyCollision(bullet, enemy)) {
                enemy.takeDMG(1);
                if (enemy.getHP() <= 0) {
+                  points += enemy.pts;
                   enemy.deactivate();
-                  points++;
                }
                bullet.isActive = false;
                }
