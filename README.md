@@ -18,6 +18,8 @@ In order to build the project, run `make` in the terminal. The Makefile will com
 Then, in order to open the GLUT window, run the following command to play the game: 
 `DISPLAY=:0 ./blipboy`
 
+**NOTE: If running on MacOS, ensure that XQuartz is installed and opened on your device before running the command above.**
+
 ## An overview of how the code is organized:
 All of the game code is located with our `src` folder, and when you open that up, we have our `main.cpp` file which contains all of the game logic and setting up the window that the user plays in. Within `main.cpp`, we include all the important header files from our `lib` folders.  
 
