@@ -3,9 +3,9 @@
 ## What the project is about:
 This project is a part of CS32 Arcade, where we were tasked to build a game using OpenGL. In order to handle the window and user input, we utilize the GLUT library.  
 
-Our game is called "BlipBoy" and it is played by controlling a circle (our main character) using the WASD keys. THe player can also shoot projectiles using their left mouse click button.  
+Our game is called "BlipBoy" and it is played by controlling a circle (our main character) using the WASD keys. The player can also shoot projectiles using their left mouse click button.  
 
-Enemies on the screen will be in the shape of squares and they will move all around the screen and bounce off of the screen edges. The top right of the corner will include a score counter which will increment by one every time a projectile comes into contact with an enemy.  
+Enemies on the screen will be in the shape of squares and they will move all around the screen and bounce off of the screen edges. The top right of the corner will include a score counter which will increment by one every time an enemy's HP bar decreases to 0 or below. 
 
 Enemies will have different colors, each indicating the amount of "HP" that they have. Yellow enemies can take 3 hits, Green can take 6 hits, and blue can take 9 hits. The player is rewarded more points for killing enemies that have greater HP. Also, when you hit an enemy, the speed of the enemy will increase as the health decreases. The goal of the game will be to get as high of a score as possible in a time limit of 1 minute. 
 
