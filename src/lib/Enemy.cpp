@@ -71,58 +71,16 @@ void Enemy::move() {
    if (!isActive) return;
    //checks the hp of the enemy and adjusts speed accordingly
    if(HP < 3){
-      if(xSpeed < 0 && ySpeed < 0){
-         xSpeed = -0.04;
-         ySpeed = -0.014;
-      }
-      else if (xSpeed < 0){
-         xSpeed = -0.04;
-         ySpeed = 0.014;
-      }
-      else if (ySpeed < 0){
-         xSpeed = 0.04;
-         ySpeed = -0.014;
-      }
-      else {
-         xSpeed = 0.04;
-         ySpeed = 0.014;
-      }
+      xSpeed = xSpeed/abs(xSpeed) * 0.04;
+      ySpeed = ySpeed/abs(ySpeed) * 0.014;
    }
    else if(HP < 6){
-      if(xSpeed < 0 && ySpeed < 0){
-         xSpeed = -0.02;
-         ySpeed = -0.007;
-      }
-      else if (xSpeed < 0){
-         xSpeed = -0.02;
-         ySpeed = 0.007;
-      }
-      else if (ySpeed < 0){
-         xSpeed = 0.02;
-         ySpeed = -0.007;
-      }
-      else {
-         xSpeed = 0.02;
-         ySpeed = 0.007;
-      }
+      xSpeed = xSpeed/abs(xSpeed) * 0.02;
+      ySpeed = ySpeed/abs(ySpeed) * 0.007;
    }
    else{
-      if(xSpeed < 0 && ySpeed < 0){
-         xSpeed = -0.01;
-         ySpeed = -0.004;
-      }
-      else if (xSpeed < 0){
-         xSpeed = -0.01;
-         ySpeed = 0.004;
-      }
-      else if (ySpeed < 0){
-         xSpeed = 0.01;
-         ySpeed = -0.004;
-      }
-      else {
-         xSpeed = 0.01;
-         ySpeed = 0.004;
-      }
+      xSpeed = xSpeed/abs(xSpeed) * 0.01;
+      ySpeed = ySpeed/abs(ySpeed) * 0.004;
    }
    // Animation Control - compute the location for the next refresh
     enemyX += xSpeed;

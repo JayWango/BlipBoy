@@ -68,9 +68,13 @@ void spawnEnemy() {
    auto currentTime = std::chrono::steady_clock::now();
    int elapsedMillis = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastSpawnTime).count();
    if (elapsedMillis >= spawnIntervalMillis) {
-      GLfloat r = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+      /*GLfloat r = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
       GLfloat g = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
-      GLfloat b = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+      GLfloat b = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);*/
+      // declares colors
+      GLfloat r = 0;
+      GLfloat g = 0;
+      GLfloat b = 0;
       int enemyID = rand( ) % 3;
       // generates a random enemy of random difficulty
       if(enemyID == 0){
