@@ -15,7 +15,7 @@ void Bullet::update() {
 
 void Bullet::draw() const {
     if (isActive) {
-        glColor3f(1.0f, 0.0f, 0.0f); // Set color to red
+        glColor3f(0, 128, 0); // Set color to green
         glPointSize(5.0f); // Adjust point size as needed
 
         glBegin(GL_POINTS);

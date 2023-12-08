@@ -7,7 +7,7 @@ Our game is called "BlipBoy" and it is played by controlling a circle (our main 
 
 Enemies on the screen will be in the shape of squares and they will move all around the screen and bounce off of the screen edges. The top right of the corner will include a score counter which will increment by one every time an enemy's HP bar decreases to 0 or below. 
 
-Enemies will have different colors, however they all have the same amount of HP (100). Each bullet from the BlipBoy does 20 damage, so each enemy can take a total of 5 hits. The BlipBoy also has 100 HP and takes 20 damage if it collides with an enemy. The player's goal is to get as high as a score as possible within 60 seconds, or until they run out of HP. 
+Enemies will have different colors, each indicating the amount of "HP" that they have. Yellow enemies can take 3 hits, Green can take 6 hits, and blue can take 9 hits. The player is rewarded more points for killing enemies that have greater HP. Also, when you hit an enemy, the speed of the enemy will increase as the health decreases. The goal of the game will be to get as high of a score as possible in a time limit of 1 minute. 
 
 ## How to build the project:
 Run the following commands to build/run the project:
@@ -17,6 +17,8 @@ In order to build the project, run `make` in the terminal. The Makefile will com
 ## How to use the executables once they're built:
 Then, in order to open the GLUT window, run the following command to play the game: 
 `DISPLAY=:0 ./blipboy`
+
+**NOTE: If running on MacOS, ensure that XQuartz is installed and opened on your device before running the command above.**
 
 ## An overview of how the code is organized:
 All of the game code is located with our `src` folder, and when you open that up, we have our `main.cpp` file which contains all of the game logic and setting up the window that the user plays in. Within `main.cpp`, we include all the important header files from our `lib` folders.  

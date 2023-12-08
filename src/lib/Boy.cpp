@@ -10,7 +10,7 @@ void Boy::draw() const {
     if (!isActive) return;
     const int numSegments = 100; 
     const float radius = size / 2.0f; 
-    glColor3f(0.1f, 0.3f, 1.0f); 
+    glColor3f(0, 128, 0); 
 
     glBegin(GL_TRIANGLE_FAN); 
     glVertex2f(x, y);
